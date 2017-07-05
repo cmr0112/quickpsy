@@ -119,7 +119,7 @@
 #' library(MPDiR) # contains the Vernier data; use ?Vernier for the reference
 #' fit <- quickpsy(Vernier, Phaseshift, NumUpward, N,
 #'                 grouping = .(Direction, WaveForm, TempFreq), B = 10)
-#' plotcurves(fit)
+#' plot(fit)
 #' plotpar(fit)
 #' plotthresholds(fit, geom = 'point')
 
