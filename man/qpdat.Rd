@@ -18,4 +18,3 @@ signal and the perceived positions of moving objects. Journal of Vision,
 7(7), 1.
 }
 \keyword{datasets}
-

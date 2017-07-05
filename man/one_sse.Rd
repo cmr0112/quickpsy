@@ -14,4 +14,3 @@ Calculates the sum of squared errors of prediction
 condition
 }
 \keyword{internal}
-

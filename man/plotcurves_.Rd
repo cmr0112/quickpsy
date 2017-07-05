@@ -50,4 +50,3 @@ plotcurves_(fit, xpanel = 'Direction', color = 'WaveForm', ci = FALSE)
 \seealso{
 \code{\link{plotcurves}}
 }
-

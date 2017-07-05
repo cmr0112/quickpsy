@@ -12,4 +12,3 @@ Creates the limits
 \code{limits} creates the limits
 }
 \keyword{internal}
-

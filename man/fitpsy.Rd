@@ -13,4 +13,3 @@ Fits the curve
 \code{fitpsy} fits de curve
 }
 \keyword{internal}
-

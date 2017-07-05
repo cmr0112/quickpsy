@@ -13,4 +13,3 @@ Calculates the parameters
 \code{parameters} calculates the parameters
 }
 \keyword{internal}
-

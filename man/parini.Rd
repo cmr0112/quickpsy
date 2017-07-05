@@ -12,4 +12,3 @@ Calculates some initial parameters
 \code{parini} calculates some initial parameters
 }
 \keyword{internal}
-

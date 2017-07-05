@@ -14,4 +14,3 @@ logliks(qp)
 Calculates the loglikelihoods
 \code{logliks} calculates the loglikelihoods.
 }
-

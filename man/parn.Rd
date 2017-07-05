@@ -14,4 +14,3 @@ Creates one bootstrap sample
 \code{one_bootstrapav} creates one bootstrap sample
 }
 \keyword{internal}
-

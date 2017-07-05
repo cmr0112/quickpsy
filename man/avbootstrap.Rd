@@ -18,4 +18,3 @@ avbootstrap(qp, bootstrap = "parametric", B = 100)
 \description{
 \code{avbootstrap} creates bootstrap samples
 }
-

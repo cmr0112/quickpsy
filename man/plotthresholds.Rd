@@ -43,4 +43,3 @@ plotthresholds(fit, color = Direction, ypanel = WaveForm, geom = 'point')
 \seealso{
 \code{\link{plotthresholds_}}
 }
-

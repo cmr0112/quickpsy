@@ -112,4 +112,3 @@ In SE functions, you need to quote the names of the variables.
 \seealso{
 \code{\link{quickpsy}}
 }
-

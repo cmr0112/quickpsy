@@ -45,4 +45,3 @@ plotpar_(fit, color = 'Direction', ypanel = 'WaveForm', geom = 'point')
 \seealso{
 \code{\link{plotpar}}
 }
-

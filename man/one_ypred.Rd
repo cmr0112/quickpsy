@@ -14,4 +14,3 @@ Calculate the predictions of the response variable for one condition
 condition
 }
 \keyword{internal}
-

@@ -16,4 +16,3 @@ difference in the thresholds for two groups for all possible pairs
 of groups
 }
 \keyword{internal}
-

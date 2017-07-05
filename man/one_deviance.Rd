@@ -14,4 +14,3 @@ Creates the deviance for one condition
 one_deviance
 }
 \keyword{internal}
-

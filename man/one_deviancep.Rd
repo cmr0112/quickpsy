@@ -16,4 +16,3 @@ parametric model holds for one condition
 or larger if the parametric model holds for one condition
 }
 \keyword{internal}
-

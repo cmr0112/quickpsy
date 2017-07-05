@@ -26,4 +26,3 @@ ggplot(curve, aes(x = x, y = y)) + geom_line()
 \seealso{
 \code{\link{weibull_fun}}
 }
-
