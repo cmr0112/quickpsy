@@ -16,4 +16,3 @@
 Plot the parameters and its confidence intervals
 \code{summary} Plot the parameters and its confidence intervals
 }
-

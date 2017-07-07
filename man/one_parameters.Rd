@@ -13,4 +13,3 @@ Obtains the parameters for one condition
 \code{one_parameters} obtains the parameters for one condition
 }
 \keyword{internal}
-

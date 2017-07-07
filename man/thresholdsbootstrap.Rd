@@ -12,4 +12,3 @@ Calculates bootstrap thresholds
 \code{thresholdsbootstrap} calculates bootstrap thresholds
 }
 \keyword{internal}
-

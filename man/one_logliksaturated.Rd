@@ -14,4 +14,3 @@ Creates the loglik for the saturated model for one condition
 one_loglik
 }
 \keyword{internal}
-

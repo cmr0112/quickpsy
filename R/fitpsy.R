@@ -3,9 +3,10 @@
 #' @keywords internal
 #' @export
 fitpsy <- function(d, x, k, n, random, within, between, grouping, xmin, xmax,
-          log, funname, parini, pariniset, guess, lapses, optimization) {
+          log, fun, functs, parini, pariniset, guess, lapses,
+          optimization) {
 
-  fun <- get(funname)
+
 
   if (is.logical(guess) && !guess) guess <- 0
   if (is.logical(lapses) && !lapses) lapses <- 0
@@ -26,31 +27,32 @@ fitpsy <- function(d, x, k, n, random, within, between, grouping, xmin, xmax,
     n <- 'n'
   }
 
-  if (!(missing(random) && missing(within) && missing(between) && missing(grouping)))
-    d <- d %>% group_by_(.dots=groups)
+  if (!(missing(random) &&
+        missing(within) && missing(between) && missing(grouping)))
+    d <- d %>% group_by_(.dots = groups)
 
   prob <- NULL
   d$prob <- d[[k]] / d[[n]]
 
   if (log) d[[x]] <- log(d[[x]])
 
-  psyfunguesslapses <- create_psy_fun(fun, guess, lapses)
+  psyfunguesslapses <- create_psy_fun(functs, guess, lapses)
 
   limits <- limits(d, x, xmin, xmax, log)
 
   groups <- as.character(groups(d))
 
   if (!pariniset)
-    if (funname %in% names(get_functions()))
-      parini <- parini(d, x, k, n, guess, lapses, funname)
+    if (fun %in% names(get_functions()))
+      parini <- parini(d, x, k, n, guess, lapses, fun, groups)
     else stop('parini (initial parameters) must be specified.')
 
-  par <- parameters(d, x, k, n, psyfunguesslapses, funname,
+  par <- parameters(d, x, k, n, psyfunguesslapses, fun,
                      parini, pariniset, guess, lapses, optimization, groups)
 
   list(x = x, k = k , n = n, guess = guess, lapses = lapses,
        averages = d,
-       groups = groups, funname = funname, log = log,
+       groups = groups, funname = fun, log = log,
        psyfunguesslapses = psyfunguesslapses, limits = limits,
        pariniset = pariniset, parini = parini,
        optimization = optimization, par = par)

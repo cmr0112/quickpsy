@@ -24,4 +24,3 @@ xseq <- inv_cum_normal_fun(yseq, c(2, .5))
 curve <- data.frame(x = xseq, y = yseq)
 ggplot(curve, aes(x = x, y = y)) + geom_line()
 }
-

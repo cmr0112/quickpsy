@@ -16,4 +16,3 @@ difference in the parameters for two groups for all possible pairs
 of groups (for each parameter)
 }
 \keyword{internal}
-

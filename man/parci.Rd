@@ -12,4 +12,3 @@ Calculates the confidence intervals for the parameters
 \code{parci} calculates the confidence intervals for the parameters
 }
 \keyword{internal}
-

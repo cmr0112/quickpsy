@@ -5,12 +5,11 @@
 \title{Fits the curve
 \code{fitpsy} fits de curve}
 \usage{
-fitpsy(d, x, k, n, random, within, between, grouping, xmin, xmax, log, funname,
-  parini, pariniset, guess, lapses, optimization)
+fitpsy(d, x, k, n, random, within, between, grouping, xmin, xmax, log, fun,
+  functs, parini, pariniset, guess, lapses, optimization)
 }
 \description{
 Fits the curve
 \code{fitpsy} fits de curve
 }
 \keyword{internal}
-

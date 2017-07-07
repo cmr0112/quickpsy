@@ -12,4 +12,3 @@ Creates the full saturated negative log-likelihood function
 \code{create_nll} Creates the full saturated negative log-likelihood function
 }
 \keyword{internal}
-

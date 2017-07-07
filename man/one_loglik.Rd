@@ -14,4 +14,3 @@ Creates the loglik for one condition
 one_loglik
 }
 \keyword{internal}
-

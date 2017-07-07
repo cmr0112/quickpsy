@@ -1,8 +1,11 @@
-#' @export
+#' Print quickpsy objects
+#'@export print.quickpsy
 print.quickpsy <- function(x,...)
 {
+  print('Parameters')
   print(x$par)
-  print(x$parci)
-  if ('thresholds' %in% names(x)) print(x$thresholds)
-  if ('thresholdsci' %in% names(x)) print(x$thresholdsci)
+  if ('thresholds' %in% names(x)) {
+    print('Thresholds')
+    print(x$thresholds)
+  }
 }

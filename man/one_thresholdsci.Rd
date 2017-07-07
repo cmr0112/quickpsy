@@ -14,4 +14,3 @@ Calculates the confidence intervals for the threshold of one condition
 of one condition
 }
 \keyword{internal}
-

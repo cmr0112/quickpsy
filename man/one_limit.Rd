@@ -12,4 +12,3 @@ Creates the limits for one condition
 \code{one_limit} creates the limits for one condition
 }
 \keyword{internal}
-

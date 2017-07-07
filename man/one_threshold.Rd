@@ -14,4 +14,3 @@ Calculates the threshold for one condition
 one_threshold
 }
 \keyword{internal}
-

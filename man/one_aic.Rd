@@ -14,4 +14,3 @@ Calculates the AIC for one condition
 one_deviance
 }
 \keyword{internal}
-

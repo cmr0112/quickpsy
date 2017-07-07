@@ -14,4 +14,3 @@ get_functions()
 \code{\link{logistic_fun}},
 \code{\link{weibull_fun}}
 }
-

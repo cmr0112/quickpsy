@@ -12,4 +12,3 @@ sse(qp)
 \description{
 \code{ypred} calculates the sum of squared errors of prediction
 }
-

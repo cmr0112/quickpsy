@@ -12,4 +12,3 @@ Creates the psychometric function
 \code{create_psy_fun} creates the psychometric function
 }
 \keyword{internal}
-

@@ -26,4 +26,3 @@ assumes that in each file, the first row has the names of the variables.
 # fit <- quickpsy(dat, phase, resp, grouping=.(subject), lapses = T, guess = T)
 # plotcurves(fit)
 }
-

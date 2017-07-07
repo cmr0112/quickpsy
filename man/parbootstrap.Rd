@@ -12,4 +12,3 @@ parbootstrap(qp)
 \description{
 \code{parbootstrap} creates bootstrap samples of the parameters.
 }
-

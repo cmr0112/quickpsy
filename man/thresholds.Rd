@@ -22,4 +22,3 @@ Calculates the thresholds
 \keyword{internal}
 \keyword{the}
 \keyword{thresholds}
-

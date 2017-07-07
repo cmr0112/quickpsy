@@ -12,4 +12,3 @@ Calculates the confidence intervals for one condition
 \code{one_parci} calculates the confidence intervals for one condition
 }
 \keyword{internal}
-

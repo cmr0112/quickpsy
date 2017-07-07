@@ -6,8 +6,9 @@
 \usage{
 quickpsy(d, x = x, k = k, n = n, grouping, random, within, between,
   xmin = NULL, xmax = NULL, log = FALSE, fun = cum_normal_fun,
-  parini = NULL, guess = 0, lapses = 0, prob = NULL, thresholds = T,
-  bootstrap = "parametric", B = 100, ci = 0.95, optimization = "optim")
+  parini = NULL, guess = 0, lapses = 0, prob = NULL,
+  thresholds = TRUE, bootstrap = "parametric", B = 100, ci = 0.95,
+  optimization = "optim")
 }
 \arguments{
 \item{d}{Data frame with the results of a Yes-No experiment to fit.
@@ -143,7 +144,7 @@ where \eqn{\gamma} is the guess rate, \eqn{\lambda} is the lapse rate and
 library(MPDiR) # contains the Vernier data; use ?Vernier for the reference
 fit <- quickpsy(Vernier, Phaseshift, NumUpward, N,
                 grouping = .(Direction, WaveForm, TempFreq), B = 10)
-plotcurves(fit)
+plot(fit)
 plotpar(fit)
 plotthresholds(fit, geom = 'point')
 }
@@ -161,4 +162,3 @@ introduction. London: Academic Press.
 \seealso{
 \code{\link{quickpsy_}}
 }
-

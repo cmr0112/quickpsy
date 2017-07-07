@@ -20,4 +20,3 @@ fit <- quickpsy(Vernier, Phaseshift, NumUpward, N,
                 grouping = .(Direction, WaveForm, TempFreq), B = 20)
 ypred(fit)
 }
-

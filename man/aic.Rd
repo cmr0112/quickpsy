@@ -12,4 +12,3 @@ aic(qp)
 \description{
 \code{aic} calculates the AICs.
 }
-

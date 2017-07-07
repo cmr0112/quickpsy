@@ -12,4 +12,3 @@ Calculates the confidence intervals for the thresholds
 \code{thresholdsci} calculates the confidence intervals for the thresholds
 }
 \keyword{internal}
-

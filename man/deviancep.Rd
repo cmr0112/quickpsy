@@ -12,4 +12,3 @@ Calculates the probability of obtaining the deviance value or larger if the para
 \code{deviancep} calculates the probability of obtaining the deviance value or larger if the parametric model holds.
 }
 \keyword{internal}
-
