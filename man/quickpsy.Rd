@@ -7,7 +7,7 @@
 quickpsy(d, x = x, k = k, n = n, grouping, xmin = NULL, xmax = NULL,
   log = FALSE, fun = cum_normal_fun, parini = NULL, guess = 0,
   lapses = 0, prob = NULL, thresholds = TRUE, bootstrap = "parametric",
-  B = 100, ci = 0.95, optimization = "optim")
+  B = 100, ci = 0.95)
 }
 \arguments{
 \item{d}{Data frame with the results of a Yes-No experiment to fit.
@@ -46,11 +46,17 @@ or the name of a function introduced by the user
 (default is \code{cum_normal_fun}).}
 
 \item{parini}{Initial parameters. quickpsy calculates default
-initial parameters using probit analysis, but it is also possible to
-specify a vector of initial parameters or a list of the form
-\code{list(c(par1min, par1max), c(par2min, par2max))} to
-constraint the lower and upper bounds of the parameters (when
-\code{optimization = 'DE'}, parini should be also a list).}
+initial parameters for the predefined functions by linear modelling of
+the probit-transformed data. Otherwise, \code{parini} could be
+\itemize{
+  \item  a vector of initial parameters
+  \item a list of the form
+  \code{list(c(par1min, par1max), c(par2min, par2max))} to
+  constraint the lower and upper bounds of the parameters
+  \item a dataframe specifiying the initial parameters for each condition
+  with the same structure that the output \code{par},
+  but without the confidence intervals.
+ }}
 
 \item{guess}{Value indicating the guess rate \eqn{\gamma} (default is 0). If
 \code{TRUE}, the guess rate is estimated as the i + 1 paramEter where

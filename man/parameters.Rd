@@ -5,8 +5,8 @@
 \title{Calculates the parameters
 \code{parameters} calculates the parameters}
 \usage{
-parameters(d, x, k, n, psyfunguesslapses, funname, parini, pariniset, guess,
-  lapses, optimization, groups)
+parameters(averages, parini, x, k, n, psyfunguesslapses, funname, pariniset,
+  guess, lapses, groups)
 }
 \description{
 Calculates the parameters

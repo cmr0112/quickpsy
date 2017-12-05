@@ -4,5 +4,12 @@
 #' @param qp output from quickpsy
 #' @export
 sse <- function(qp) {
-  qp$ypred %>% do(one_sse(., qp$groups, qp$averages))
+  one_sse <- function(averages, ypred) {
+    tibble(sse = sum((averages$prob-ypred$y)^2))
+  }
+
+  apply_to_two_elements(qp,
+                        averages, ypred,
+                        ~one_sse(.x, .y))
+
 }

@@ -4,7 +4,7 @@
 \alias{thresholds}
 \title{Calculates the thresholds}
 \usage{
-thresholds(qp, prob = NULL, log = FALSE)
+thresholds(qp, prob)
 }
 \arguments{
 \item{qp}{output from quickpsy}

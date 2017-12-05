@@ -3,9 +3,17 @@
 #' @param qp output from quickpsy
 #' @export
 logliks <- function(qp) {
-  qp$averages %>%
-    do(one_loglik(., qp$x, qp$psyfunguesslapses, qp$groups,
-                  qp$par))
+
+  one_loglik <- function(averages, par, x, psyfunguesslapses) {
+    nllfun <- create_full_nll(averages, x, psyfunguesslapses)
+    tibble(loglik = -nllfun(par$par))
+  }
+
+  apply_to_two_elements(qp,
+                        averages, par,
+                        ~one_loglik(.x, .y,
+                                       qp$x,
+                                       qp$psyfunguesslapses))
 }
 
 

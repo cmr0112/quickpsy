@@ -4,7 +4,7 @@
 \alias{avbootstrap}
 \title{Creates bootstrap samples}
 \usage{
-avbootstrap(qp, bootstrap = "parametric", B = 100)
+avbootstrap(qp, bootstrap, B)
 }
 \arguments{
 \item{qp}{output from quickpsy}

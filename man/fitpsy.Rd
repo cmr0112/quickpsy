@@ -6,7 +6,7 @@
 \code{fitpsy} fits de curve}
 \usage{
 fitpsy(d, x, k, n, grouping, xmin, xmax, log, fun, funname, parini, pariniset,
-  guess, lapses, optimization)
+  guess, lapses)
 }
 \description{
 Fits the curve

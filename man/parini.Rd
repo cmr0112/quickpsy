@@ -4,7 +4,7 @@
 \alias{parini}
 \title{Calculates the initial parameters}
 \usage{
-parini(d, x, guess, lapses, funname)
+parini(averages, x, guess, lapses, funname, groups)
 }
 \description{
 Calculates the initial parameters

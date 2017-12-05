@@ -5,7 +5,7 @@
 \title{Creates the limits
 \code{limits} creates the limits}
 \usage{
-limits(d, x, xmin, xmax)
+limits(averages, x, xmin, xmax, groups)
 }
 \description{
 Creates the limits

@@ -7,24 +7,32 @@
 #' \code{'none'} does not perform bootstrap (default is \code{'parametric'}).
 #' @param B number of bootstrap samples (default is 100 ONLY).
 #' @export
-avbootstrap <- function(qp, bootstrap = 'parametric', B = 100) {
-  if (qp$pariniset) {
-    if (is.atomic(parini)) {
-      parini <- qp$par
-      pariniset <- FALSE
+avbootstrap <- function(qp, bootstrap, B) {
+
+  one_bootstrapav <- function(averages, ypred,
+                              x, k, n,
+                              bootstrap, B) {
+
+    if (bootstrap == "parametric") ypred <- ypred$y
+    if (bootstrap == "nonparametric") ypred <- averages$k / averages$n
+
+    create_fake_data <- function(averages, ypred){
+      x <- averages %>% select(!!x) %>% pull()
+      kfake <- rbinom(length(x), averages$n, ypred)
+      averages %>% mutate(k = kfake, prob = k / n)
     }
-    else{
-      parini <- qp$parini
-      pariniset <- TRUE
-    }
-  }
-  else {
-    parini <- qp$par
-    pariniset <- FALSE
+
+    tibble(sample = 1:B) %>%
+      group_by(sample) %>%
+      mutate(temp = list(create_fake_data(averages, ypred))) %>%
+      unnest(temp)
+
   }
 
-  qp$averages %>% do(one_bootstrapav(., qp$x, qp$k, qp$n,
-                  qp$psyfunguesslapses, qp$funname, qp$guess, qp$lapses,
-                  parini, pariniset, qp$optimization, bootstrap, B,
-                  qp$groups, qp$ypred))
+  apply_to_two_elements(qp,
+                        averages, ypred,
+                        ~one_bootstrapav(.x, .y,
+                                         qp$x, qp$k, qp$n,
+                                         bootstrap, B))
+
 }

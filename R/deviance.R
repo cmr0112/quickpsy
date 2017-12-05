@@ -10,7 +10,14 @@
 #' deviance(fit)
 #' @export
 deviance <- function(qp) {
-  qp$logliks %>% do(one_deviance(., qp$groups, qp$loglikssaturated))
+  one_deviance <- function(logliks, loglikssaturated) {
+    deviance <- -2 * (logliks$loglik - loglikssaturated$loglik)
+    tibble(deviance)
+  }
+
+  apply_to_two_elements(qp,
+                        logliks, loglikssaturated,
+                        ~one_deviance(.x, .y))
 }
 
 

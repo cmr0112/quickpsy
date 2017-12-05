@@ -4,20 +4,20 @@
 #' @param qp output from quickpsy
 #' @export
 parbootstrap <- function(qp) {
-  if (qp$pariniset) {
-    if (is.atomic(parini)) {
-      parini <- qp$par
-      pariniset <- FALSE
-    }
-    else{
-      parini <- qp$parini
-      pariniset <- TRUE
-    }
-  }
-  else {
-    parini <- qp$par
-    pariniset <- FALSE
-  }
+  # if (qp$pariniset) {
+  #   if (is.atomic(parini)) {
+  #     parini <- qp$par
+  #     pariniset <- FALSE
+  #   }
+  #   else{
+  #     parini <- qp$parini
+  #     pariniset <- TRUE
+  #   }
+  # }
+  # else {
+  #   parini <- qp$par
+  #   pariniset <- FALSE
+  # }
 
   if (length(qp$groups) == 0)
     avboot <- qp$avbootstrap %>% group_by_('sample')

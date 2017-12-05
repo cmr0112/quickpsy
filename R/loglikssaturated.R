@@ -10,9 +10,18 @@
 #' loglikssaturated(fit)
 #' @export
 loglikssaturated <- function(qp) {
-  qp$averages %>%
-    do(one_logliksaturated(., qp$x, qp$k, qp$n, qp$psyfunguesslapses, qp$groups,
-                  qp$par))
+
+  one_logliksaturated <- function(averages, par, x, k, n, psyfunguesslapses) {
+    nllfun <- create_nllsaturated(averages, x, k, n, psyfunguesslapses)
+    tibble(loglik = -nllfun(par$par))
+  }
+
+  apply_to_two_elements(qp,
+                        averages, par,
+                        ~one_logliksaturated(.x, .y,
+                                    qp$x, qp$k, qp$n,
+                                    qp$psyfunguesslapses))
+
 }
 
 
