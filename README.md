@@ -1,4 +1,6 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+[![Rdoc](http://www.rdocumentation.org/badges/version/quickpsy)](http://www.rdocumentation.org/packages/quickpsy)
+
 quickpsy is an R package developed by [Daniel Linares](http://www.dlinares.org) and [Joan López-Moliner](http://www.ub.edu/viscagroup/joan/) to quickly fit and plot psychometric functions for multiple conditions. It makes an extensive use of Hadley Wickham's packages [ggplot2](http://ggplot2.org/) and [dplyr](https://CRAN.R-project.org/package=dplyr).
 
 To understand the fundamentals of fitting psychometric functions in R, we recommend the book [Modeling Psychophysical Data in R](http://www.springer.com/gp/book/9781461444749).

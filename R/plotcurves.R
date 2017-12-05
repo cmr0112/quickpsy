@@ -22,10 +22,11 @@
 #' plotcurves(fit)
 #' plotcurves(fit, xpanel = Direction)
 #' plotcurves(fit, xpanel = Direction, color = WaveForm, ci = FALSE)
-#' @export
+#' @export plotcurves
 plotcurves <- function(qp, panel = NULL, xpanel = NULL, ypanel = NULL,
-                       color = NULL, averages = T, curves = T, thresholds = T,
-                       ci = T) {
+                       color = NULL,
+                       averages = TRUE, curves = TRUE, thresholds = TRUE,
+                       ci = TRUE) {
 
   if (!missing(panel)) panel <- deparse(substitute(panel))
   if (!missing(xpanel)) xpanel <- deparse(substitute(xpanel))

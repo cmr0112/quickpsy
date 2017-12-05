@@ -4,7 +4,7 @@
 #' @export
 logliks <- function(qp) {
   qp$averages %>%
-    do(one_loglik(., qp$x, qp$k, qp$n, qp$psyfunguesslapses, qp$groups,
+    do(one_loglik(., qp$x, qp$psyfunguesslapses, qp$groups,
                   qp$par))
 }
 

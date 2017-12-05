@@ -9,7 +9,7 @@
 #' fit <- quickpsy(Vernier, Phaseshift, NumUpward, N,
 #'                 grouping = .(Direction, WaveForm, TempFreq), B = 20)
 #' ypred(fit)
-#' @export
+#' @export ypred
 ypred <- function(qp) {
   qp$par %>% do(one_ypred(., log, qp$groups, qp$averages, qp$x,
                            qp$psyfunguesslapses))

@@ -12,7 +12,8 @@ Depends:
     R (>= 3.1.2),
     DEoptim,
     dplyr,
-    ggplot2
+    ggplot2,
+    rlang
 Imports:
     MPDiR
 Encoding: UTF-8

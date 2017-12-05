@@ -5,7 +5,7 @@
 \title{Plot the curves}
 \usage{
 plotcurves(qp, panel = NULL, xpanel = NULL, ypanel = NULL, color = NULL,
-  averages = T, curves = T, thresholds = T, ci = T)
+  averages = TRUE, curves = TRUE, thresholds = TRUE, ci = TRUE)
 }
 \arguments{
 \item{qp}{output from quickpsy}

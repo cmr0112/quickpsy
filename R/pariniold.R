@@ -1,8 +1,9 @@
 #' Calculates some initial parameters
-#' \code{parini} calculates some initial parameters
+#' \code{pariniols} calculates some initial parameters
 #' @keywords internal
 #' @export
-one_parini <- function(d, x, k, n, guess, lapses, psyfun, groups) {
+pariniold <- function(d, x, k, n, guess, lapses, psyfun) {
+  calculate_parini <- function(d, x, k, n, guess, lapses, psyfun) {
     ntrials <- unique(d[[n]])
     yq <- d[[k]] / d[[n]]
     if (is.numeric(guess) && is.numeric(lapses)) {
@@ -67,7 +68,8 @@ one_parini <- function(d, x, k, n, guess, lapses, psyfun, groups) {
       if (lapses) para <- c(p1, p2, lap)
       if (!lapses) para <- c(p1, p2)
     }
-    tibble(paran = paste0('p', seq(1, length(para))), par = para)
-
+    data.frame(paran = paste0('p', seq(1, length(para))), par = para)
+  }
+  d %>% do(calculate_parini(., x, k, n, guess, lapses, psyfun))
 }
 

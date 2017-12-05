@@ -20,18 +20,6 @@
 #' variable indicating the total number of trials.
 #' @param grouping Name of the grouping variables. It should be specified as
 #' \code{grouping = .(variable_name1, variable_name2)}.
-#' @param random Name of the random variable. It should be specified as
-#' \code{random = .(variable_name1, variable_name2)}. In the current version
-#' of quickpsy, the random variable has not special treatment. It does the
-#' same as \code{grouping}.
-#' @param within Name of the within variable. It should be specified as
-#' \code{within = .(variable_name1, variable_name2)}. In the current version
-#' of quickpsy, the within variable has not special treatment. It does the
-#' same as \code{grouping}.
-#' @param between Name of the between variable.  It should be specified as
-#' \code{between = .(variable_name1, variable_name2)}. In the current version
-#' of quickpsy, the between variable has not special treatment. It does the
-#' same as \code{grouping}.
 #' @param xmin Minimum value of the explanatory variable for which the curves
 #' should be calculated (the default is the minimum value of the explanatory
 #' variable).
@@ -130,24 +118,24 @@
 #' quantile qweibull rbinom
 #' @importFrom utils combn head read.table tail
 
-quickpsy <- function(d, x = x, k = k, n = n, grouping, random, within, between,
-                     xmin = NULL, xmax = NULL, log = FALSE,
-                     fun = cum_normal_fun, parini = NULL, guess = 0, lapses = 0,
-                     prob = NULL, thresholds = TRUE,
+quickpsy <- function(d, x = x, k = k, n = n, grouping, xmin = NULL, xmax = NULL,
+                     log = FALSE, fun = cum_normal_fun, parini = NULL,
+                     guess = 0, lapses = 0, prob = NULL, thresholds = TRUE,
                      bootstrap = 'parametric', B = 100, ci = .95,
                      optimization = 'optim') {
 
-  functs <- fun
-  fun <- deparse(substitute(fun))
+  x <- enquo(x)
 
-  if (!missing(n)) n <- deparse(substitute(n))
+  k <- enquo(k)
+
+  if (!missing(n)) n <- enquo(n)
   else n <- NULL
-  if (!missing(random)) random <- as.character(substitute(random))[-1]
-  if (!missing(within)) within <- as.character(substitute(within))[-1]
-  if (!missing(between)) between <- as.character(substitute(between))[-1]
+
   if (!missing(grouping)) grouping <- as.character(substitute(grouping))[-1]
 
-  if (missing(B)) cat(paste('Using only', B, 'bootstrap samples.'))
+  funname <- quo_name(enquo(fun))
+
+  if (missing(B) & bootstrap != "none") cat(paste('Using only', B, 'bootstrap samples.\n'))
 
   if (!is.null(prob)) thresholds <- TRUE
 
@@ -156,12 +144,13 @@ quickpsy <- function(d, x = x, k = k, n = n, grouping, random, within, between,
   if (is.null(parini)) pariniset <- FALSE
   else pariniset <- TRUE
 
-  qp <- fitpsy(d, x, k, n, random, within, between, grouping, xmin, xmax, log,
-               fun, functs, parini, pariniset, guess, lapses, optimization)
+  qp <- fitpsy(d, x, k, n, grouping, xmin, xmax, log,
+               fun, funname, parini, pariniset, guess, lapses, optimization)
 
   qp <- c(qp, list(pariniset = pariniset))
 
   qp <- c(qp, list(ypred = ypred(qp)))
+
   if (sum(qp$ypred$ypred < 0) + sum(qp$ypred$ypred > 1) > 0)
     if (bootstrap == 'parametric')
       stop ('As y-predictions are not within (0,1), bootstrap should be \'nonparametric\'', call.=FALSE)
@@ -169,7 +158,6 @@ quickpsy <- function(d, x = x, k = k, n = n, grouping, random, within, between,
   qp <- c(qp, list(curves = curves(qp, xmin, xmax, log)))
 
   qp <- c(qp, list(sse=sse(qp)))
-
   if (thresholds) {
     if (is.null(prob))
       if (is.logical(guess) && guess) prob <- .5
@@ -178,12 +166,14 @@ quickpsy <- function(d, x = x, k = k, n = n, grouping, random, within, between,
   }
 
   qp <- c(qp, list(logliks = logliks(qp)))
-  qp <- c(qp, list(loglikssaturated = loglikssaturated(qp)))
-  qp <- c(qp, list(deviance = deviance(qp)))
 
+  qp <- c(qp, list(loglikssaturated = loglikssaturated(qp)))
+
+  qp <- c(qp, list(deviance = deviance(qp)))
 
   if (bootstrap == 'parametric' || bootstrap == 'nonparametric') {
     qp <- c(qp, list(avbootstrap = avbootstrap(qp, bootstrap, B)))
+
     qp <- c(qp, list(parbootstrap = parbootstrap(qp)))
     parci <- parci(qp, ci)
     qp$par <- full_join(qp$par, parci, by= c('parn',qp$groups))
@@ -224,9 +214,14 @@ quickpsy <- function(d, x = x, k = k, n = n, grouping, random, within, between,
     stop('Bootstrap should be \'parametric\', \'nonparametric\' or \'none\'.',
          call. = FALSE)
 
-  if (log) qp$averages[[x]] <- exp(qp$averages[[x]])
+  #if (log) qp$averages[[x]] <- exp(qp$averages[[x]])
+  # if (log) {
+  #   name_x <- quo_name(x)
+  #   qp$averages <- qp$averages %>% mutate(!!name_x := log(!!x))
+  # }
 
   class(qp) <- 'quickpsy'
+
   qp
 }
 

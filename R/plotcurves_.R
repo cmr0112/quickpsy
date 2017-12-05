@@ -29,7 +29,7 @@
 #' plotcurves_(fit, xpanel = 'Direction', color = 'WaveForm', ci = FALSE)
 #' @import ggplot2
 #' @importFrom utils packageVersion
-#' @export
+#' @export plotcurves_
 plotcurves_ <- function(qp, panel = NULL, xpanel = NULL, ypanel = NULL,
                color = NULL, averages = TRUE, curves = TRUE,
                thresholds = TRUE, ci = TRUE) {
@@ -51,6 +51,8 @@ plotcurves_ <- function(qp, panel = NULL, xpanel = NULL, ypanel = NULL,
 
   groups <- qp$groups
   ngroup <- length(groups)
+  print(groups)
+  print(ngroup)
 
   if (ngroup == 1) { ###########################################################
     if (!is.null(color)) groups <- setdiff(groups, color)
@@ -110,7 +112,7 @@ plotcurves_ <- function(qp, panel = NULL, xpanel = NULL, ypanel = NULL,
 
    p <- p + facet_grid(as.formula(paste0(ypanel,'~',xpanel)))
   }
-
+p
 ### plotting ###################################################################
   if (ngroup == 0) {
    if (averages) p <- p + geom_point(data = qp$averages,
@@ -136,12 +138,17 @@ plotcurves_ <- function(qp, panel = NULL, xpanel = NULL, ypanel = NULL,
                     aes_string(x = 'x', y = 'y', color = color))
 
       if (thresholds) {
+
         qp$thresholds[[color]] <- factor(qp$thresholds[[color]])
+
         # get present axis limits
         if (packageVersion('ggplot2') >= '2.2.0')
           axisYrange <- ggplot_build(p)$layout$panel_ranges[[1]]$y.range
+
         else
           axisYrange <- ggplot_build(p)$panel$ranges[[1]]$y.range
+
+
         p <- p + geom_linerange(data = qp$thresholds,
                     aes_string(x = 'thre',
                     		       ymin = axisYrange[1] - .2, #make sure extends below axis line
@@ -169,5 +176,6 @@ plotcurves_ <- function(qp, panel = NULL, xpanel = NULL, ypanel = NULL,
                        xmax = 'thresup', y = qp$thresholds$prob))
     }
   }
+
   p
 }

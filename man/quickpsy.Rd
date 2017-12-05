@@ -4,11 +4,10 @@
 \alias{quickpsy}
 \title{Fits psychometric functions}
 \usage{
-quickpsy(d, x = x, k = k, n = n, grouping, random, within, between,
-  xmin = NULL, xmax = NULL, log = FALSE, fun = cum_normal_fun,
-  parini = NULL, guess = 0, lapses = 0, prob = NULL,
-  thresholds = TRUE, bootstrap = "parametric", B = 100, ci = 0.95,
-  optimization = "optim")
+quickpsy(d, x = x, k = k, n = n, grouping, xmin = NULL, xmax = NULL,
+  log = FALSE, fun = cum_normal_fun, parini = NULL, guess = 0,
+  lapses = 0, prob = NULL, thresholds = TRUE, bootstrap = "parametric",
+  B = 100, ci = 0.95, optimization = "optim")
 }
 \arguments{
 \item{d}{Data frame with the results of a Yes-No experiment to fit.
@@ -29,21 +28,6 @@ variable indicating the total number of trials.}
 
 \item{grouping}{Name of the grouping variables. It should be specified as
 \code{grouping = .(variable_name1, variable_name2)}.}
-
-\item{random}{Name of the random variable. It should be specified as
-\code{random = .(variable_name1, variable_name2)}. In the current version
-of quickpsy, the random variable has not special treatment. It does the
-same as \code{grouping}.}
-
-\item{within}{Name of the within variable. It should be specified as
-\code{within = .(variable_name1, variable_name2)}. In the current version
-of quickpsy, the within variable has not special treatment. It does the
-same as \code{grouping}.}
-
-\item{between}{Name of the between variable.  It should be specified as
-\code{between = .(variable_name1, variable_name2)}. In the current version
-of quickpsy, the between variable has not special treatment. It does the
-same as \code{grouping}.}
 
 \item{xmin}{Minimum value of the explanatory variable for which the curves
 should be calculated (the default is the minimum value of the explanatory

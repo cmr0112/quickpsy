@@ -10,16 +10,16 @@
 #' logliksboot(fit)
 #' @export
 logliksboot <- function(qp) {
-  if (length(qp$groups) == 0)
-    avbootstrap <- qp$avbootstrap %>% group_by_('sample')
+  groups <- qp$groups
+  groups_sample <- c(groups, "sample")
+  if (length(groups) == 0)
+    avbootstrap <- qp$avbootstrap %>% group_by(sample)
   else
     avbootstrap <- qp$avbootstrap %>%
-      group_by_(.dots = c(qp$groups, 'sample'))
-
-  allgroups <- as.character(groups(qp$avbootstrap))
+      group_by(!!!syms(groups_sample))
 
   avbootstrap %>%
-    do(one_loglik(., qp$x, qp$k, qp$n, qp$psyfunguesslapses, allgroups,
+    do(one_loglik(., qp$x, qp$psyfunguesslapses, groups_sample,
                   qp$parbootstrap))
 }
 

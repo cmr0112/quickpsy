@@ -15,7 +15,7 @@
 #' # plotcurves(fit)
 #' @importFrom utils read.csv
 #' @import dplyr
-#' @export
+#' @export quickreadfiles
 
 quickreadfiles <- function(path = getwd(), extension = 'txt', ...) {
 
@@ -36,7 +36,8 @@ quickreadfiles <- function(path = getwd(), extension = 'txt', ...) {
 
   namesfun <- function(d) {
     namefile <- paste0(path,'/', paste(unlist(d), collapse = ''), extensiondot)
-    data.frame(namefile, exist = file.exists(namefile), stringsAsFactors=F)
+    data.frame(namefile, exist = file.exists(namefile),
+               stringsAsFactors = FALSE)
   }
 
 
@@ -46,6 +47,6 @@ quickreadfiles <- function(path = getwd(), extension = 'txt', ...) {
 
   namefiles %>% filter(exist) %>%
     group_by_(.dots = names(arguments)) %>%
-    do(funread(.$namefile, header = T)) %>%
+    do(funread(.$namefile, header = TRUE)) %>%
     ungroup()
 }
