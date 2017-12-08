@@ -3,27 +3,32 @@ library(quickpsy)
 dat <- read.table("dat.txt")
 
 dat9 <- dat %>% filter(task == 'comp', subject == 9 | subject == 8 , vertical== FALSE)
-
+gompertz_fun <- function(x, p) exp(-p[1] * exp(-p[2] * x))
 
 fit <- quickpsy(dat9,
                      orSmall, response,
                      grouping = .(subject, orLarge),
                 bootstrap = "parametric", # lapses = TRUE,
-                #parini = c(0, 1, .1),
+                #fun = gompertz_fun,
+                #parini = list(c(-2,2), c(0, 10)),
+                prob = .7, lapses = T,
+                parini = c(0, 1, .5),
+                #parini = "asd",
                 #     guess = TRUE, lapses = TRUE, xmax = -4, xmin = 4,
                   #   parini = list(c(-2, 2), c(0.1,3), c(0,.4)),
                  #  parini = list(c(-2, 2), c(0.1,3)),
-                     B = 10)
+                     B = 3)
 
 ggplot() + facet_grid(orLarge~subject) +
   geom_point(data = fit$averages, size = 3,
              aes(x = orSmall, y = prob)) +
-  geom_point(data = fit$avbootstrap,  alpha = .1,
-             aes(x = orSmall, y = prob,  group = sample)) +
-   geom_line(data = fit$curves, aes(x = x, y = y, color = orLarge)) +
-   geom_segment(data = fit$thresholds, aes(x = thre, xend = thre,
-                                           y = 0, yend = prob,
-                                           color = orLarge))
+  # geom_point(data = fit$avbootstrap,  alpha = .1,
+  #            aes(x = orSmall, y = prob,  group = sample)) +
+    geom_line(data = fit$curves, aes(x = x, y = y, color = orLarge)) +
+    geom_segment(data = fit$thresholds, aes(x = thre, xend = thre,
+                                            y = 0, yend = prob,
+                                            color = orLarge)) +
+  theme()
 
 n <- 100
 x <- c(.2, .4, .6, .8, 1) # luminance
@@ -33,6 +38,7 @@ dat <- data.frame(x, y, k, n, cond = "cond")
 
 fit <- quickpsy(dat, x, k, n, B = 3)
 fit <- quickpsy(dat, x, k, n, B = 3, parini = list(c(0,1), c(0,1)))
+fit <- quickpsy(dat, x, k, n, B = 3, parini = c(1,1))
 
 ggplot() +
   geom_point(data = fit$averages, aes(x = x, y = prob)) +

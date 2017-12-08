@@ -142,8 +142,13 @@ quickpsy <- function(d, x = x, k = k, n = n,
   else n <- NULL
 
   if (!missing(grouping)) grouping <- as.character(substitute(grouping))[-1]
+  groups <- c()
+  if (!missing(grouping)) groups <- c(groups, grouping)
 
   funname <- quo_name(enquo(fun))
+  if (funname %in% names(get_functions())) {
+    cat(paste("Fitting the following function: ", funname, "\n"))
+  }
 
   if (missing(B) & bootstrap != "none")
     cat(paste("Using only", B, "bootstrap samples.\n"))
@@ -153,29 +158,64 @@ quickpsy <- function(d, x = x, k = k, n = n,
   if (is.null(parini)) pariniset <- FALSE
   else pariniset <- TRUE
 
-  qp <- fitpsy(d, x, k, n,
-               grouping,
-               xmin, xmax,
-               log,
-               fun, funname,
-               parini, pariniset,
-               guess, lapses)
+  if (is.logical(guess) && !guess) guess <- 0
+  if (is.logical(lapses) && !lapses) lapses <- 0
 
-  qp <- c(qp, list(pariniset = pariniset))
+  ### Calling functions
 
-  qp <- c(qp, list(ypred = ypred(qp)))
+  averages <- averages(d, x, k, n, groups, log)
 
-  qp <- c(qp, list(curves = curves(qp)))
+  conditions <- averages %>% distinct(!!!syms(groups))
 
-  qp <- c(qp, list(sse = sse(qp)))
+  psyfunguesslapses <- create_psy_fun(fun, guess, lapses)
 
-  if (thresholds) qp <- c(qp, list(thresholds = thresholds(qp, prob)))
+  limits <- limits(averages, x, xmin, xmax, groups)
 
-  qp <- c(qp, list(logliks = logliks(qp)))
+  parini <- parini(averages, x, guess, lapses, funname,
+                   parini, pariniset, groups)
 
-  qp <- c(qp, list(loglikssaturated = loglikssaturated(qp)))
 
-  qp <- c(qp, list(deviance = deviance(qp)))
+  par <- parameters(averages, parini,
+                    x, k, n,
+                    psyfunguesslapses, funname,
+                    pariniset, guess, lapses,
+                    groups)
+
+  ypred <-  ypred(par, averages, x, psyfunguesslapses)
+
+  curves <- curves(par, limits, log, psyfunguesslapses)
+
+  sse <-  sse(averages, ypred)
+
+  if (thresholds) thresholds <-  thresholds(par, curves, prob, log, funname,
+                                            guess, lapses)
+
+  logliks <- logliks(averages, par, x, psyfunguesslapses)
+
+  loglikssaturated <-  loglikssaturated(averages, par,
+                                        x, k, n, psyfunguesslapses)
+
+  deviance <- deviance(logliks, loglikssaturated)
+
+  qp <- list(averages = averages,
+             conditions = conditions,
+             limits = limits,
+             parini = parini,
+             par = par,
+             ypred = ypred,
+             curves = curves,
+             sse = sse,
+             thresholds = thresholds,
+             logliks = logliks,
+             loglikssaturated = loglikssaturated,
+             deviance = deviance)
+
+  return(qp)
+
+  # qp <- c(qp, list(pariniset = pariniset))
+  #
+
+  #
 
   ##### llevar el tema de los log a fitpsy
   #if (log) qp$averages[[x]] <- exp(qp$averages[[x]])
@@ -186,9 +226,10 @@ quickpsy <- function(d, x = x, k = k, n = n,
 
   ### bootstrap
   if (bootstrap == "parametric" || bootstrap == "nonparametric") {
-     qp <- c(qp, list(avbootstrap = avbootstrap(qp, bootstrap, B)))
+    a <- 0
+     #qp <- c(qp, list(avbootstrap = avbootstrap(qp, bootstrap, B)))
 
-     qp <- c(qp, list(parbootstrap = parbootstrap(qp)))
+     #qp <- c(qp, list(parbootstrap = parbootstrap(qp)))
     # parci <- parci(qp, ci)
     # qp$par <- full_join(qp$par, parci, by= c('parn',qp$groups))
     #
@@ -229,8 +270,8 @@ quickpsy <- function(d, x = x, k = k, n = n,
   #        call. = FALSE)
 
 
-  class(qp) <- "quickpsy"
-  qp
+  # class(qp) <- "quickpsy"
+  # qp
 }
 
 #' Data set for demonstration

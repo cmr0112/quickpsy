@@ -5,7 +5,7 @@
 \title{Creates the curves
 \code{curves} creates the curves}
 \usage{
-curves(qp)
+curves(par, limits, log, psyfunguesslapses)
 }
 \description{
 Creates the curves

@@ -4,7 +4,7 @@
 \alias{sse}
 \title{Sum of squared errors of prediction}
 \usage{
-sse(qp)
+sse(averages, ypred)
 }
 \arguments{
 \item{qp}{output from quickpsy}

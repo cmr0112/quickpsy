@@ -4,7 +4,7 @@
 \alias{deviance}
 \title{Calculates the deviances}
 \usage{
-deviance(qp)
+deviance(logliks, loglikssaturated)
 }
 \arguments{
 \item{qp}{output from quickpsy}

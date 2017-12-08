@@ -1,7 +1,8 @@
 #' Calculates the initial parameters
 #' @keywords internal
 #' @export parini
-parini <- function(averages, x, guess, lapses, funname, groups) {
+parini <- function(averages, x, guess, lapses, funname,
+                   parini, pariniset, groups) {
 
   one_parini <- function(d, x, guess, lapses, psyfun) {
 
@@ -73,17 +74,38 @@ parini <- function(averages, x, guess, lapses, funname, groups) {
       if (lapses) para <- c(p1, p2, lap)
       if (!lapses) para <- c(p1, p2)
     }
-    tibble(paran = paste0('p', seq(1, length(para))), par = para)
+    tibble(parn = paste0('p', seq(1, length(para))), par = para)
   }
 
-  averages %>% nest(everything(), .key = averages) %>%
-    mutate(parini = map(averages,
-                        ~one_parini(.x, x,
-                                    guess, lapses,
-                                    funname))) %>%
-    select(-averages) %>%
-    unnest(parini) %>%
-    group_by(!!!syms(groups))
-
-
+  if (!pariniset)
+    if (funname %in% names(get_functions())) {
+      parini <-   averages %>%
+        nest(everything(), .key = averages) %>%
+        mutate(parini = map(averages,
+                            ~one_parini(.x, x,
+                                        guess, lapses,
+                                        funname))) %>%
+        select(-averages) %>%
+        unnest(parini) %>%
+        group_by(!!!syms(groups))
+    }
+  else {
+    stop("parini (initial parameters) must be specified.")
+  }
+  else {
+    if (is.atomic(parini)) {
+      parini <- tibble(parn = paste0('p', seq(1, length(parini))),
+                       par = parini)
+      parini <- expand(averages %>% distinct(!!!syms(groups)), parini)
+    }
+    else
+      if(is.list(parini)) {
+        parini <- matrix(unlist(parini), ncol = 2, byrow = TRUE) %>% as_tibble()
+        names(parini) <- c("parmin", "parmax")
+        parini <- tibble(parn = paste0("p", seq(1, nrow(parini)))) %>%
+          bind_cols(parini)
+        parini <- expand(averages %>% distinct(!!!syms(groups)), parini)
+      }
+  }
+  parini
 }

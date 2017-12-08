@@ -7,7 +7,8 @@
 #' has been used to fit the curves (default is \code{FALSE}).
 #' @export
 
-thresholds <- function(qp, prob){
+thresholds <- function(par, curves, prob, log, funname,
+                       guess, lapses){
   one_threshold <- function(par, curves, prob, log, funname,
                             guess, lapses) {
     if (funname %in%  names(get_functions())) {
@@ -42,17 +43,13 @@ thresholds <- function(qp, prob){
   }
 
   if (is.null(prob)) {
-    if (is.logical(qp$guess) && qp$guess) prob <- .5
-    else  prob <- qp$guess + .5 * (1 - qp$guess)
+    if (is.logical(guess) && guess) prob <- .5
+    else  prob <- guess + .5 * (1 - guess)
   }
 
-  apply_to_two_elements(qp,
-                        par, curves,
-                        ~one_threshold(.x, .y,
-                                       prob,
-                                       qp$log,
-                                       qp$funname,
-                                       qp$guess, qp$lapses))
+  apply_to_two_elements(par, curves,
+                        ~one_threshold(.x, .y, prob, log, funname,
+                                       guess, lapses))
 
 
 }

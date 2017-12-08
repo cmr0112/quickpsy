@@ -5,7 +5,7 @@
 \title{Calculates the loglikelihoods
 \code{logliks} calculates the loglikelihoods.}
 \usage{
-logliks(qp)
+logliks(averages, par, x, psyfunguesslapses)
 }
 \arguments{
 \item{qp}{output from quickpsy}

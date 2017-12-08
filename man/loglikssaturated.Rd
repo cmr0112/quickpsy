@@ -4,7 +4,7 @@
 \alias{loglikssaturated}
 \title{Calculates the loglikelihoods of the saturated model}
 \usage{
-loglikssaturated(qp)
+loglikssaturated(averages, par, x, k, n, psyfunguesslapses)
 }
 \arguments{
 \item{qp}{output from quickpsy}

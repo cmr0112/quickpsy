@@ -9,18 +9,16 @@
 #'                 grouping = .(Direction, WaveForm, TempFreq), B = 20)
 #' loglikssaturated(fit)
 #' @export
-loglikssaturated <- function(qp) {
+loglikssaturated <- function(averages, par, x, k, n, psyfunguesslapses) {
 
   one_logliksaturated <- function(averages, par, x, k, n, psyfunguesslapses) {
     nllfun <- create_nllsaturated(averages, x, k, n, psyfunguesslapses)
     tibble(loglik = -nllfun(par$par))
   }
 
-  apply_to_two_elements(qp,
-                        averages, par,
-                        ~one_logliksaturated(.x, .y,
-                                    qp$x, qp$k, qp$n,
-                                    qp$psyfunguesslapses))
+  apply_to_two_elements(averages, par,
+                        ~one_logliksaturated(.x, .y, x, k, n,
+                                             psyfunguesslapses))
 
 }
 

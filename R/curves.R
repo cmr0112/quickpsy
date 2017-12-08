@@ -3,7 +3,7 @@
 #' @import dplyr
 #' @keywords internal
 #' @export
-curves <- function(qp) {
+curves <- function(par, limits, log, psyfunguesslapses) {
   one_curve <- function(par, limits, log, psyfunguesslapses) {
     x <- seq(limits$xmin, limits$xmax, length = 300)
     y <- psyfunguesslapses(x, par$par)
@@ -11,8 +11,7 @@ curves <- function(qp) {
     tibble(x, y)
   }
 
-  apply_to_two_elements(qp,
-                        par, limits,
-                        ~one_curve(.x, .y, qp$log, qp$psyfunguesslapses))
+  apply_to_two_elements(par, limits,
+                        ~one_curve(.x, .y, log, psyfunguesslapses))
 
 }

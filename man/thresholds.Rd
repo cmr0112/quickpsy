@@ -4,15 +4,15 @@
 \alias{thresholds}
 \title{Calculates the thresholds}
 \usage{
-thresholds(qp, prob)
+thresholds(par, curves, prob, log, funname, guess, lapses)
 }
 \arguments{
-\item{qp}{output from quickpsy}
-
 \item{prob}{Probability to calculate the threshold.}
 
 \item{log}{Use \code{TRUE}, if the logarithm of the independent variable
 has been used to fit the curves (default is \code{FALSE}).}
+
+\item{qp}{output from quickpsy}
 }
 \description{
 Calculates the thresholds

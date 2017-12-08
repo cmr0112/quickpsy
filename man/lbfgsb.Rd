@@ -4,7 +4,7 @@
 \alias{lbfgsb}
 \title{L-BFGS-B optimization}
 \usage{
-lbfgsb(d, parini, x, k, n, psyfunguesslapses, funname, pariniset, guess, lapses)
+lbfgsb(d, parini, x, psyfunguesslapses)
 }
 \description{
 L-BFGS-B optimization

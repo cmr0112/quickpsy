@@ -9,7 +9,8 @@ limits <- function(averages, x, xmin, xmax, groups) {
     tibble(xmin, xmax)
   }
 
-  averages %>% nest(everything(), .key = averages) %>%
+  averages %>%
+    nest(everything(), .key = averages) %>%
     mutate(limits = map(averages, ~one_limit(.x, x, xmin, xmax))) %>%
     select(-averages) %>%
     unnest(limits) %>%

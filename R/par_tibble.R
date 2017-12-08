@@ -1,10 +1,8 @@
 #' @keywords internal
 #' @export
-par_tibble <- function(d, parini,
-                        x, k, n,
-                        psyfunguesslapses, funname,
-                        pariniset,
-                        guess, lapses) {
+par_tibble <- function(d, parini, x, psyfunguesslapses, funname,
+                       guess, lapses) {
+
 
   nllfun <- create_nll(d, x, psyfunguesslapses)
 
@@ -53,6 +51,7 @@ par_tibble <- function(d, parini,
       else {
          para <- optim(parini, nllfun)$par
       }
-    }
+  }
+
   tibble(parn = paste0('p', seq(1, length(para))), par = para)
 }
