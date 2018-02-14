@@ -109,9 +109,14 @@ A list containing the following components:
   variable.
   \item \code{curves} Curves.
   \item \code{par} Fitted parameters and its confidence intervals.
+  \item \code{parcomnparisons} Pair-wise comparisons of the parameters
+  to assess whether two parameters are significantly different
+  using bootstrap. Specifically, the parameter bootstrap samples for each of
+  the two conditions are substrated and then it is considered whether zero
+  was within the confidence interval level of the distributions of differences.
   \item \code{curvesbootstrap} Bootstrap curves.
-  \item \code{thresholds} Thresholds.
-  \item \code{thresholdsci} Confidence intervals for the thresholds.
+  \item \code{thresholds} Thresholds and its confidence intervals.
+  \item \code{thresholdscomparisons} Pair-wise comparisons of the thresholds.
   \item \code{logliks} Log-likelihoods of the model.
   \item \code{loglikssaturated} Log-likelihoods of the saturated model.
   \item \code{deviance} Deviance of the model and the p-value calculated by

@@ -13,7 +13,7 @@ It is part of the data associated with the paper 'Motion signal and
 the perceived positions of moving objects'.
 }
 \references{
-Linares, D., López-Moliner, J., & Johnston, A. (2007). Motion
+Linares, D., L??pez-Moliner, J., & Johnston, A. (2007). Motion
 signal and the perceived positions of moving objects. Journal of Vision,
 7(7), 1.
 }

@@ -86,9 +86,14 @@
 #'   variable.
 #'   \item \code{curves} Curves.
 #'   \item \code{par} Fitted parameters and its confidence intervals.
+#'   \item \code{parcomnparisons} Pair-wise comparisons of the parameters
+#'   to assess whether two parameters are significantly different
+#'   using bootstrap. Specifically, the parameter bootstrap samples for each of
+#'   the two conditions are substrated and then it is considered whether zero
+#'   was within the confidence interval level of the distributions of differences.
 #'   \item \code{curvesbootstrap} Bootstrap curves.
-#'   \item \code{thresholds} Thresholds.
-#'   \item \code{thresholdsci} Confidence intervals for the thresholds.
+#'   \item \code{thresholds} Thresholds and its confidence intervals.
+#'   \item \code{thresholdscomparisons} Pair-wise comparisons of the thresholds.
 #'   \item \code{logliks} Log-likelihoods of the model.
 #'   \item \code{loglikssaturated} Log-likelihoods of the saturated model.
 #'   \item \code{deviance} Deviance of the model and the p-value calculated by
@@ -142,6 +147,7 @@ quickpsy <- function(d, x = x, k = k, n = n,
   else n <- NULL
 
   if (!missing(grouping)) grouping <- as.character(substitute(grouping))[-1]
+
   groups <- c()
   if (!missing(grouping)) groups <- c(groups, grouping)
 
@@ -165,50 +171,52 @@ quickpsy <- function(d, x = x, k = k, n = n,
 
   averages <- averages(d, x, k, n, groups, log)
 
-  conditions <- averages %>% distinct(!!!syms(groups))
+  conditions <- averages %>% distinct(UQS(groups(averages)))
 
-  psyfunguesslapses <- create_psy_fun(fun, guess, lapses)
+  funname_df <- funname_df(conditions, funname)
 
-  limits <- limits(averages, x, xmin, xmax, groups)
+  fun_df <- fun_df(conditions, fun)
 
-  parini <- parini(averages, x, guess, lapses, funname,
-                   parini, pariniset, groups)
+  psyfunguesslapses_df <- psyfunguesslapses_df(fun_df, guess, lapses)
 
+  limits <- limits(averages, x, xmin, xmax)
 
-  par <- parameters(averages, parini,
-                    x, k, n,
-                    psyfunguesslapses, funname,
-                    pariniset, guess, lapses,
-                    groups)
-
-  ypred <-  ypred(par, averages, x, psyfunguesslapses)
-
-  curves <- curves(par, limits, log, psyfunguesslapses)
-
-  sse <-  sse(averages, ypred)
-
-  if (thresholds) thresholds <-  thresholds(par, curves, prob, log, funname,
-                                            guess, lapses)
-
-  logliks <- logliks(averages, par, x, psyfunguesslapses)
-
-  loglikssaturated <-  loglikssaturated(averages, par,
-                                        x, k, n, psyfunguesslapses)
-
-  deviance <- deviance(logliks, loglikssaturated)
+  parini <- parini(averages, funname_df, x, guess, lapses, pariniset, parini)
+  #
+  # par <- parameters(averages, parini, psyfunguesslapses_df, funname_df,
+  #                   x, guess, lapses)
+  #
+  # ypred <-  ypred(par, averages, x, psyfunguesslapses_df)
+  #
+  # curves <- curves(par, limits, log, psyfunguesslapses)
+  #
+  # sse <-  sse(averages, ypred)
+  #
+  # if (thresholds) thresholds <-  thresholds(par, curves, prob, log, funname,
+  #                                           guess, lapses)
+  #
+  # logliks <- logliks(averages, par, x, psyfunguesslapses)
+  #
+  # loglikssaturated <-  loglikssaturated(averages, par,
+  #                                       x, k, n, psyfunguesslapses)
+  #
+  # deviance <- deviance(logliks, loglikssaturated)
 
   qp <- list(averages = averages,
-             conditions = conditions,
-             limits = limits,
-             parini = parini,
-             par = par,
-             ypred = ypred,
-             curves = curves,
-             sse = sse,
-             thresholds = thresholds,
-             logliks = logliks,
-             loglikssaturated = loglikssaturated,
-             deviance = deviance)
+              conditions = conditions,
+              funname_df = funname_df,
+              fun_df = fun_df,
+              psyfunguesslapses_df =psyfunguesslapses_df,
+              limits = limits,
+              parini = parini)
+             # par = par,
+             # ypred = ypred,
+             # curves = curves,
+             # sse = sse,
+             # thresholds = thresholds,
+             # logliks = logliks,
+             # loglikssaturated = loglikssaturated,
+             # deviance = deviance)
 
   return(qp)
 
@@ -280,7 +288,7 @@ quickpsy <- function(d, x = x, k = k, n = n,
 #' the perceived positions of moving objects'.
 #' @name qpdat
 #' @docType data
-#' @references Linares, D., López-Moliner, J., & Johnston, A. (2007). Motion
+#' @references Linares, D., L??pez-Moliner, J., & Johnston, A. (2007). Motion
 #'signal and the perceived positions of moving objects. Journal of Vision,
 #' 7(7), 1.
 

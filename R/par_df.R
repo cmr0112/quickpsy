@@ -1,10 +1,13 @@
 #' @keywords internal
 #' @export
-par_tibble <- function(d, parini, x, psyfunguesslapses, funname,
-                       guess, lapses) {
+# par_df <- function(d, parini, x, psyfunguesslapses, funname,
+#                        guess, lapses) {
+par_df <- function(averages, parini, psyfunguesslapses, funname,
+                   x, guess, lapses) {
 
-
-  nllfun <- create_nll(d, x, psyfunguesslapses)
+  print(parini)
+  print(funname)
+  nllfun <- create_nll(averages, x, psyfunguesslapses)
 
   parini <- parini$par
 
@@ -32,6 +35,7 @@ par_tibble <- function(d, parini, x, psyfunguesslapses, funname,
   }
 
   if (funname == "cum_normal_fun") {
+    print("cum")
     if (parini[2] < 0) parini[2] <- .Machine$double.eps
 
     if (guess | lapses) {
@@ -52,6 +56,6 @@ par_tibble <- function(d, parini, x, psyfunguesslapses, funname,
          para <- optim(parini, nllfun)$par
       }
   }
-
+print(para)
   tibble(parn = paste0('p', seq(1, length(para))), par = para)
 }
