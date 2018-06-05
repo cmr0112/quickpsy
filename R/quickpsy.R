@@ -146,7 +146,7 @@ quickpsy <- function(d, x = x, k = k, n = n,
   if (!missing(n)) n <- enquo(n)
   else n <- NULL
 
-  if (!missing(grouping)) grouping <- as.character(substitute(grouping))[-1]
+  if (!missing(grouping)) grouping <- as.character(enexpr(grouping))[-1]
 
   groups <- c()
   if (!missing(grouping)) groups <- c(groups, grouping)
@@ -175,11 +175,11 @@ quickpsy <- function(d, x = x, k = k, n = n,
 
   funname_df <- funname_df(conditions, funname)
 
-  fun_df <- fun_df(conditions, fun)
+   fun_df <- fun_df(conditions, fun)
 
-  psyfunguesslapses_df <- psyfunguesslapses_df(fun_df, guess, lapses)
+   psyfunguesslapses_df <- psyfunguesslapses_df(fun_df, guess, lapses)
 
-  limits <- limits(averages, x, xmin, xmax)
+   limits <- limits(averages, x, xmin, xmax)
 
   parini <- parini(averages, funname_df, x, guess, lapses, pariniset, parini)
   #
@@ -202,13 +202,13 @@ quickpsy <- function(d, x = x, k = k, n = n,
   #
   # deviance <- deviance(logliks, loglikssaturated)
 
-  qp <- list(averages = averages,
-              conditions = conditions,
-              funname_df = funname_df,
-              fun_df = fun_df,
-              psyfunguesslapses_df =psyfunguesslapses_df,
-              limits = limits,
-              parini = parini)
+   qp <- list(averages = averages,
+               conditions = conditions,
+               funname_df = funname_df,
+               fun_df = fun_df,
+               psyfunguesslapses_df =psyfunguesslapses_df,
+               limits = limits,
+               parini = parini)
              # par = par,
              # ypred = ypred,
              # curves = curves,

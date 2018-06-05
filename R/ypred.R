@@ -13,7 +13,8 @@
 ypred <- function(par, averages, x, psyfunguesslapses_df) {
   one_ypred <- function(par, averages, x, psyfunguesslapses) {
     x <- averages %>% select(!!x) %>% pull()
-    y <- psyfunguesslapses(x, par %>% select(par) %>% pull())
+    p <- par %>% select(par) %>% pull()
+    y <- psyfunguesslapses(x, p)
     tibble(x, y)
   }
 
