@@ -2,6 +2,49 @@ library(quickpsy)
 library(MPDiR) #contains HSP
 library(dplyr)
 
+pses <- c(1, 2, 3)
+slopes <- c(.3, .6, .9)
+
+dat <- crossing(participant = 1:3, size = c("large", "small")) %>%
+  bind_cols(pse = c(.5, 0.7, 1, 1.2, 1.4, 1.6),
+            slope= c(.2, .2, .4, .4, .6, .6)) %>%
+  crossing(x = seq(0, 2, .2)) %>%
+  mutate(p = pnorm(x, pse, slope)) %>%
+  rowwise() %>%
+  mutate(n = 50,
+         k = rbinom(1, n, p),
+         prob = k / n)
+
+ggplot(dat) +
+  facet_grid(. ~ participant) +
+  geom_point(aes(x = x, y = prob, color = size)) +
+  geom_line(aes(x = x, y = prob, color = size))
+
+conditions <- dat %>% distinct(participant, size)
+
+fun1 <- function(x, p) pnorm(x, p[1], p[2])
+fun2 <- function(x, p) pnorm(x, p[3], p[2])
+
+conditions_size <- dat %>% distinct(size)
+
+par_ini <- c(1, 1, 0.5)
+
+df_fun <- conditions_size %>%
+  bind_cols(tibble(fun = c(fun1, fun2)))
+
+fit <- quickpsy(dat, x, k, n, grouping = .(participant, size), fun = df_fun)
+
+fit$limits
+ggplot(fit$averages) +
+  facet_grid(. ~ participant) +
+  geom_point(aes(x = x, y = prob, color = size)) +
+  geom_line(aes(x = x, y = prob, color = size))
+
+
+
+
+
+
 
 HSP <- HSP %>% mutate(k = round(N * p / 100)) # to calculate the number of 'yes'
 fit <- quickpsy(HSP, Q, k, N, prob = .6, grouping = .(Run, Obs), log = TRUE, B = 5)

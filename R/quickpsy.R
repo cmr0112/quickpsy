@@ -151,40 +151,48 @@ quickpsy <- function(d, x = x, k = k, n = n,
   groups <- c()
   if (!missing(grouping)) groups <- c(groups, grouping)
 
-  funname <- quo_name(enquo(fun))
-  if (funname %in% names(get_functions())) {
-    cat(paste("Fitting the following function: ", funname, "\n"))
-  }
+  # funname <- quo_name(enquo(fun))
+  # if (funname %in% names(get_functions())) {
+  #   cat(paste("Fitting the following function: ", funname, "\n"))
+  # }
 
-  if (missing(B) & bootstrap != "none")
-    cat(paste("Using only", B, "bootstrap samples.\n"))
+   if (missing(B) & bootstrap != "none")
+     cat(paste("Using only", B, "bootstrap samples.\n"))
 
-  if (!is.null(prob)) thresholds <- TRUE
+   if (!is.null(prob)) thresholds <- TRUE
 
-  if (is.null(parini)) pariniset <- FALSE
-  else pariniset <- TRUE
+   if (is.null(parini)) pariniset <- FALSE
+   else pariniset <- TRUE
 
-  if (is.logical(guess) && !guess) guess <- 0
-  if (is.logical(lapses) && !lapses) lapses <- 0
+   if (is.logical(guess) && !guess) guess <- 0
+   if (is.logical(lapses) && !lapses) lapses <- 0
 
-  ### Calling functions
+   ### Calling functions
 
-  averages <- averages(d, x, k, n, groups, log)
+   averages <- averages(d, x, k, n, groups, log)
 
-  conditions <- averages %>% distinct(UQS(groups(averages)))
+   conditions <- averages %>% distinct(UQS(groups(averages)))
+   conditions_conjoint <- fun %>% select(-fun)
 
-  funname_df <- funname_df(conditions, funname)
+   conditions_conjoint_names <- fun %>%
+     select(-fun) %>%
+     colnames()
 
-   fun_df <- fun_df(conditions, fun)
+   fun <- fun %>%
+     group_by_at(vars(conditions_conjoint_names))
 
-   psyfunguesslapses_df <- psyfunguesslapses_df(fun_df, guess, lapses)
+
+   #funname_df <- funname_df(conditions, funname)
+
+  # fun_df <- fun_df(conditions, fun)
+  #
+  #  psyfunguesslapses_df <- psyfunguesslapses_df(fun_df, guess, lapses)
 
    limits <- limits(averages, x, xmin, xmax)
 
-  parini <- parini(averages, funname_df, x, guess, lapses, pariniset, parini)
-  #
-  # par <- parameters(averages, parini, psyfunguesslapses_df, funname_df,
-  #                   x, guess, lapses)
+  #parini <- parini(averages, funname_df, x, guess, lapses, pariniset, parini)
+
+  #par <- parametersNew(averages, parini, fun, x)
   #
   # ypred <-  ypred(par, averages, x, psyfunguesslapses_df)
   #
@@ -201,14 +209,17 @@ quickpsy <- function(d, x = x, k = k, n = n,
   #                                       x, k, n, psyfunguesslapses)
   #
   # deviance <- deviance(logliks, loglikssaturated)
-
-   qp <- list(averages = averages,
+#
+    qp <- list(averages = averages,
                conditions = conditions,
-               funname_df = funname_df,
-               fun_df = fun_df,
-               psyfunguesslapses_df =psyfunguesslapses_df,
-               limits = limits,
-               parini = parini)
+               conditions_conjoint = conditions_conjoint,
+               fun = fun,
+               limits = limits)
+#                funname_df = funname_df,
+#                fun_df = fun_df,
+#                psyfunguesslapses_df =psyfunguesslapses_df,
+#                limits = limits,
+#                parini = parini)
              # par = par,
              # ypred = ypred,
              # curves = curves,
@@ -233,8 +244,8 @@ quickpsy <- function(d, x = x, k = k, n = n,
   # }
 
   ### bootstrap
-  if (bootstrap == "parametric" || bootstrap == "nonparametric") {
-    a <- 0
+ # if (bootstrap == "parametric" || bootstrap == "nonparametric") {
+   # a <- 0
      #qp <- c(qp, list(avbootstrap = avbootstrap(qp, bootstrap, B)))
 
      #qp <- c(qp, list(parbootstrap = parbootstrap(qp)))
@@ -272,7 +283,7 @@ quickpsy <- function(d, x = x, k = k, n = n,
     #     qp <- c(qp, list(thresholdcomparisons = thresholdcomparisons(qp, ci)))
     #   }
     # }
-  }
+  #}
   # else if (bootstrap != 'none')
   #   stop('Bootstrap should be \'parametric\', \'nonparametric\' or \'none\'.',
   #        call. = FALSE)
