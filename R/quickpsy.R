@@ -168,18 +168,26 @@ quickpsy <- function(d, x = x, k = k, n = n,
    if (is.logical(lapses) && !lapses) lapses <- 0
 
    ### Calling functions
+  nll_fun <- 5
+  param <- 5
 
    averages <- averages(d, x, k, n, groups, log)
 
-   conditions <- averages %>% distinct(UQS(groups(averages)))
-   conditions_conjoint <- fun %>% select(-fun)
+   limits <- limits(averages, x, xmin, xmax)
 
-   conditions_conjoint_names <- fun %>%
-     select(-fun) %>%
-     colnames()
+   nll_fun <- nll_fun(averages, fun, x)
 
-   fun <- fun %>%
-     group_by_at(vars(conditions_conjoint_names))
+   par <- param(nll_fun, parini)
+
+   # conditions <- averages %>% distinct(UQS(groups(averages)))
+   # conditions_conjoint <- fun %>% select(-fun)
+   #
+   # conditions_conjoint_names <- fun %>%
+   #   select(-fun) %>%
+   #   colnames()
+   #
+   # fun <- fun %>%
+   #   group_by_at(vars(conditions_conjoint_names))
 
 
    #funname_df <- funname_df(conditions, funname)
@@ -188,12 +196,10 @@ quickpsy <- function(d, x = x, k = k, n = n,
   #
   #  psyfunguesslapses_df <- psyfunguesslapses_df(fun_df, guess, lapses)
 
-   limits <- limits(averages, x, xmin, xmax)
 
   #parini <- parini(averages, funname_df, x, guess, lapses, pariniset, parini)
 
-  #par <- parametersNew(averages, parini, fun, x)
-  #
+
   # ypred <-  ypred(par, averages, x, psyfunguesslapses_df)
   #
   # curves <- curves(par, limits, log, psyfunguesslapses)
@@ -211,10 +217,9 @@ quickpsy <- function(d, x = x, k = k, n = n,
   # deviance <- deviance(logliks, loglikssaturated)
 #
     qp <- list(averages = averages,
-               conditions = conditions,
-               conditions_conjoint = conditions_conjoint,
-               fun = fun,
-               limits = limits)
+               limits = limits,
+               nll_fun = nll_fun,
+               par = par)
 #                funname_df = funname_df,
 #                fun_df = fun_df,
 #                psyfunguesslapses_df =psyfunguesslapses_df,

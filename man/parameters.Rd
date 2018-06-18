@@ -5,7 +5,7 @@
 \title{Calculates the parameters
 \code{parameters} calculates the parameters}
 \usage{
-parameters(averages, parini, psyfunguesslapses_df, funname_df, x, guess, lapses)
+parameters(averages, parini, psyfunguesslapses_df, x)
 }
 \description{
 Calculates the parameters

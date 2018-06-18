@@ -1,0 +1,433 @@
+library(quickpsy)
+library(MPDiR) #contains HSP
+library(tidyverse)
+
+pses <- c(1, 2, 3)
+slopes <- c(.3, .6, .9)
+
+dat <- crossing(participant = 1:3, size = c("large", "small")) %>%
+  bind_cols(pse = c(.5, 0.7, 1, 1.5, 1.4, 1.6),
+            slope= c(.2, .4, .4, .8, .6, .3)) %>%
+  crossing(x = seq(0, 2, .2)) %>%
+  mutate(p = pnorm(x, pse, slope)) %>%
+  rowwise() %>%
+  mutate(n = 50,
+         k = rbinom(1, n, p),
+         prob = k / n)
+
+ggplot(dat) +
+  facet_grid(. ~ participant) +
+  geom_point(aes(x = x, y = prob, color = size)) +
+  geom_line(aes(x = x, y = prob, color = size))
+
+### dat 1 large
+dat1l <- dat %>% filter(participant == 1, size == "large")
+
+ggplot(dat1l) +
+  geom_point(aes(x = x, y = prob)) +
+  geom_line(aes(x = x, y = prob))
+
+create_nll <- function(d, psyfunguesslapses){
+#create_nll <- function(d, x, psyfunguesslapses){
+  function(p) {
+    #x <- d %>% select(!!x) %>% pull()
+    x <- d %>% select(x) %>% pull()
+    eps <- .Machine$double.eps
+
+    phi <- psyfunguesslapses(x, p)
+    phi[phi < eps] <- eps
+    phi[phi > (1 - eps)] <- 1 - eps
+
+    -sum(d$k * log(phi) + (d$n - d$k) * log(1 - phi))
+  }
+}
+
+nll <- create_nll(dat1l, cum_normal_fun)
+
+nll(c(1,1))
+
+p <- optim(c(1, 1), nll)$p
+
+xseq <- seq(0, 2, .01)
+yseq <- cum_normal_fun(xseq, p)
+
+ggplot(dat1l) +
+  geom_point(aes(x = x, y = prob)) +
+  geom_line(data = tibble(xseq, yseq),
+            aes(x = xseq, y = yseq))
+
+### dat 1
+dat1 <- dat %>%
+  filter(participant == 1)
+
+cum_normal_fun2 <- function(x, p) suppressWarnings(pnorm(x, p[3], p[2]))
+
+formalArgs(cum_normal_fun)
+
+fun_df <- tibble(size = c("large", "small"),
+                 fun = c(cum_normal_fun, cum_normal_fun2)) %>%
+  group_by(size)
+
+ggplot(dat1) +
+  geom_point(aes(x = x, y = prob, color = size)) +
+  geom_line(aes(x = x, y = prob, color = size))
+
+create_nll <- function(d, fun_df) {
+    #x <- d %>% select(!!x) %>% pull()
+  function(p) {
+    calculate_nll <- function(d, fun) {
+      x <- d %>% select(x) %>% pull()
+      eps <- .Machine$double.eps
+
+      phi <- fun(x, p)
+      phi[phi < eps] <- eps
+      phi[phi > (1 - eps)] <- 1 - eps
+
+      -sum(d$k * log(phi) + (d$n - d$k) * log(1 - phi))
+    }
+
+    d %>%
+      ungroup() %>% # a lo mejor no hace falta
+      group_by_at(group_vars(fun_df)) %>%
+      nest() %>%
+      left_join(fun_df, by = group_vars(fun_df)) %>%
+      mutate(nll = map2_dbl(data, fun, calculate_nll)) %>%
+      summarise(nll = sum(nll))
+
+  }
+}
+
+nll <- create_nll(dat1, fun_df)
+
+nll(c(1,2,2))
+
+p <- optim(c(1, 1,1), nll)$p
+
+xseq <- seq(0, 2, .01)
+yseq1 <- cum_normal_fun(xseq, p)
+yseq2 <- cum_normal_fun2(xseq, p)
+
+ggplot(dat1) +
+  geom_point(aes(x = x, y = prob, color = size)) +
+  geom_line(data = tibble(xseq, yseq1),
+            aes(x = xseq, y = yseq1)) +
+  geom_line(data = tibble(xseq, yseq2),
+            aes(x = xseq, y = yseq2), color = "red")
+
+### dat 12
+dat12 <- dat %>%
+  filter(participant %in% c(1, 2)) %>%
+  ungroup()
+
+ggplot(dat12) +
+  facet_grid(. ~ participant) +
+  geom_point(aes(x = x, y = prob, color = size)) +
+  geom_line(aes(x = x, y = prob, color = size))
+
+cum_normal_fun2 <- function(x, p) suppressWarnings(pnorm(x, p[3], p[2]))
+
+par_df <- crossing(participant = 1:2,
+                   parn = c("p1", "p2", "p3")) %>%
+  mutate(par = 1)
+
+fun_df <- tibble(size = c("large", "small"),
+                 fun = c(cum_normal_fun, cum_normal_fun2)) %>%
+  group_by(size)
+
+
+
+
+fit <- quickpsy(dat12, x, k, n,
+                grouping = .(participant, size),
+                parini = parini,
+                fun = fun_df)
+
+
+nll <- fit$nll_fun$nll_fun[[1]]
+
+nll(c(1,1,1))
+
+p <- optim(c(1,1,1), nll)$p
+
+xseq <- seq(0, 2, .01)
+yseq1 <- cum_normal_fun(xseq, para %>% filter(participant == 2) %>% pull(par))
+yseq2 <- cum_normal_fun2(xseq, para %>% filter(participant == 2) %>% pull(par))
+
+ggplot(dat12) +
+  facet_grid(.~participant) +
+  geom_point(aes(x = x, y = prob, color = size)) +
+  geom_line(data = tibble(xseq, yseq1),
+            aes(x = xseq, y = yseq1)) +
+  geom_line(data = tibble(xseq, yseq2),
+            aes(x = xseq, y = yseq2), color = "red")
+
+
+
+
+
+param <- function(nll_fun, parini) {
+  calculate_par <- function(parini, nll_fun) {
+    par <- optim(parini$par, nll_fun)$p
+    tibble(parn = paste0('p', seq(1, length(par))), par = par)
+  }
+
+  parini %>%
+    group_by_at(vars(group_vars(nll_fun))) %>%
+    nest(.key = "parini") %>%
+    left_join(nll_fun, by = group_vars(nll_fun)) #%>%
+    #mutate(par = map2(parini, nll_fun, calculate_par)) #%>%
+    #select(-nll_fun, -parini) %>%
+    #unnest(par)
+}
+
+pini <- para$parini[[1]]
+nll <- para$nll_fun[[1]]
+calculate_par(pini, nll)
+
+optim(pini$par, nll)$p
+
+para <- param(nll_fun, parini)
+para
+
+nll_fun <- fit$nll_fun
+parini <- par_df
+
+
+
+
+
+#########
+create_nll <- function(d, fun_df, x) {
+  function(p) {
+    calculate_nll <- function(d, fun) {
+      x <- d %>% select(!!x) %>% pull()
+      eps <- .Machine$double.eps
+
+      phi <- fun(x, p)
+      phi[phi < eps] <- eps
+      phi[phi > (1 - eps)] <- 1 - eps
+
+      -sum(d$k * log(phi) + (d$n - d$k) * log(1 - phi))
+    }
+
+    group_vars(fun_df) %>% print()
+
+    x <- d %>%
+      ungroup() %>% # a lo mejor no hace falta
+      group_by_at(group_vars(fun_df))
+
+    y <- x %>%
+      nest() %>%
+      left_join(fun_df, by = group_vars(fun_df)) %>%
+      mutate(nll = map2_dbl(data, fun, calculate_nll)) %>%
+      summarise(nll = sum(nll))
+
+    y
+
+  }
+}
+
+
+
+
+par <- fit$par
+
+par <- function(nll_fun, parini) {
+  calculate_par <- function(parini, nll_fun) {
+    par <- optim(parini$par, nll_fun)$p
+    tibble(parn = paste0('p', seq(1, length(par))), par = par)
+  }
+
+  parini %>%
+    group_by_at(vars(group_vars(nll_fun))) %>%
+    nest(.key = "parini") %>%
+    left_join(nll_fun, by = group_vars(nll_fun)) %>%
+    mutate(par = map2(parini, nll_fun, calculate_par))
+}
+
+nll <- fit$nll_fun$nll_fun[[1]]
+
+
+
+
+
+
+
+
+ggplot(dat1) +
+  geom_point(aes(x = x, y = prob, color = size)) +
+  geom_line(aes(x = x, y = prob, color = size))
+
+create_nll <- function(d, fun_df) {
+  #x <- d %>% select(!!x) %>% pull()
+  function(p) {
+    calculate_nll <- function(d, fun) {
+      x <- d %>% select(x) %>% pull()
+      eps <- .Machine$double.eps
+
+      phi <- fun(x, p)
+      phi[phi < eps] <- eps
+      phi[phi > (1 - eps)] <- 1 - eps
+
+      -sum(d$k * log(phi) + (d$n - d$k) * log(1 - phi))
+    }
+
+    d %>%
+      ungroup() %>% # a lo mejor no hace falta
+      group_by_at(group_vars(fun_df)) %>%
+      nest() %>%
+      left_join(fun_df, by = group_vars(fun_df)) %>%
+      mutate(nll = map2_dbl(data, fun, calculate_nll)) %>%
+      summarise(nll = sum(nll))
+
+  }
+}
+
+nll <- create_nll(dat1, fun_df)
+
+nll(c(1,2,2))
+
+p <- optim(c(1, 1,1), nll)$p
+
+xseq <- seq(0, 2, .01)
+yseq1 <- cum_normal_fun(xseq, p)
+yseq2 <- cum_normal_fun2(xseq, p)
+
+ggplot(dat12) +
+  facet_grid(.~participant) +
+  geom_point(aes(x = x, y = prob, color = size)) +
+  geom_line(data = tibble(xseq, yseq1),
+            aes(x = xseq, y = yseq1)) +
+  geom_line(data = tibble(xseq, yseq2),
+            aes(x = xseq, y = yseq2), color = "red")
+
+
+
+
+
+### dat 1
+dat1 <- dat %>% filter(participant == 1)
+
+
+fun_df <- tibble(size = c("large", "small"),
+                 fun = c(cum_normal_fun, cum_normal_fun2)) %>%
+  group_by(size)
+
+parini <- tibble(size = c(large, large, small, small),
+                 parn =c(" "))
+
+fit <- quickpsy(dat1, x, k, n, grouping = .(size),
+                parini = c(1, 1, 1), fun = fun_df)
+
+fit
+
+cum_normal_fun2 <- function(x, p) suppressWarnings(pnorm(x, p[3], p[2]))
+
+formalArgs(cum_normal_fun)
+
+
+ggplot(dat1) +
+  geom_point(aes(x = x, y = prob, color = size)) +
+  geom_line(aes(x = x, y = prob, color = size))
+
+create_nll <- function(d, fun_df) {
+  #x <- d %>% select(!!x) %>% pull()
+  function(p) {
+    calculate_nll <- function(d, fun) {
+      x <- d %>% select(x) %>% pull()
+      eps <- .Machine$double.eps
+
+      phi <- fun(x, p)
+      phi[phi < eps] <- eps
+      phi[phi > (1 - eps)] <- 1 - eps
+
+      -sum(d$k * log(phi) + (d$n - d$k) * log(1 - phi))
+    }
+
+    d %>%
+      ungroup() %>% # a lo mejor no hace falta
+      group_by_at(group_vars(fun_df)) %>%
+      nest() %>%
+      left_join(fun_df, by = group_vars(fun_df)) %>%
+      mutate(nll = map2_dbl(data, fun, calculate_nll)) %>%
+      summarise(nll = sum(nll))
+
+  }
+}
+
+nll <- create_nll(dat1, fun_df)
+
+nll(c(1,2,2))
+
+p <- optim(c(1, 1,1), nll)$p
+
+xseq <- seq(0, 2, .01)
+yseq1 <- cum_normal_fun(xseq, p)
+yseq2 <- cum_normal_fun2(xseq, p)
+
+ggplot(dat1) +
+  geom_point(aes(x = x, y = prob, color = size)) +
+  geom_line(data = tibble(xseq, yseq1),
+            aes(x = xseq, y = yseq1)) +
+  geom_line(data = tibble(xseq, yseq2),
+            aes(x = xseq, y = yseq2), color = "red")
+
+
+
+
+
+
+
+
+
+
+conditions <- dat %>% distinct(participant, size)
+
+fun1 <- function(x, p) pnorm(x, p[1], p[2])
+fun2 <- function(x, p) pnorm(x, p[3], p[2])
+
+conditions_size <- dat %>% distinct(size)
+
+par_ini <- c(1, 1, 0.5)
+
+df_fun <- conditions_size %>%
+  bind_cols(tibble(fun = c(fun1, fun2)))
+
+fit <- quickpsy(dat, x, k, n,
+                grouping = .(participant, size),
+                fun = df_fun,
+                parini = par_ini)
+
+fit$conditions_conjoint
+
+ggplot(fit$averages) +
+  facet_grid(. ~ participant) +
+  geom_point(aes(x = x, y = prob, color = size)) +
+  geom_line(aes(x = x, y = prob, color = size))
+
+######
+averages <-fit$averages
+parini <- par_ini
+fun <- fit$fun
+
+nll <- function(averages, fun) {
+  groups_conjoint <- setdiff(groups(averages), groups(fun))
+}
+
+parametersNew <- function(averages, parini, fun) {
+  groups_conjoint <- setdiff(groups(averages), groups(fun))
+
+  k <- averages %>%
+    group_by(!!!groups_conjoint)
+
+  k
+
+
+}
+
+para <- parametersNew(averages, parini, fun)
+
+
+
+
+
