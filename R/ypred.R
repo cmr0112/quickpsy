@@ -20,4 +20,5 @@ ypred <- function(par, averages, x, psyfunguesslapses_df) {
 
   apply_to_two_elements(par, averages,
                         ~one_ypred(.x, .y, x, psyfunguesslapses))
+
 }

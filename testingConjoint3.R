@@ -13,8 +13,48 @@ dat <- crossing(participant = 1:3, size = c("large", "small")) %>%
   rowwise() %>%
   mutate(n = 50,
          k = rbinom(1, n, p),
-         prob = k / n)
+         prob = k / n) %>%
+  ungroup()
 
+ggplot(dat) +
+  facet_grid(. ~ participant) +
+  geom_point(aes(x = x, y = prob, color = size)) +
+  geom_line(aes(x = x, y = prob, color = size))
+
+cum_normal_fun2 <- function(x, p) suppressWarnings(pnorm(x, p[3], p[2]))
+
+par_df <- crossing(participant = 1:3,
+                   parn = c("p1", "p2", "p3")) %>%
+  mutate(par = 1) %>%
+  group_by(participant)
+
+fun_df <- tibble(size = c("large", "small"),
+                 fun = c(cum_normal_fun, cum_normal_fun2)) %>%
+  group_by(size)
+
+fit <- quickpsy(dat , x, k, n,
+                grouping = .(participant, size),
+                parini = par_df,
+                fun = fun_df)
+
+p <- fit$par %>% filter(participant == 1) %>% pull(par)
+
+xseq <- seq(0, 2, .01)
+yseq1 <- cum_normal_fun(xseq, p)
+yseq2 <- cum_normal_fun2(xseq, p)
+
+ggplot(dat) +
+  facet_grid(.~participant) +
+  geom_point(aes(x = x, y = prob, color = size)) +
+  geom_line(data = tibble(xseq, yseq1),
+            aes(x = xseq, y = yseq1)) +
+  geom_line(data = tibble(xseq, yseq2),
+            aes(x = xseq, y = yseq2), color = "red")
+
+
+
+
+### dat12
 dat12 <- dat %>%
   filter(participant %in% c(1, 2)) %>%
   ungroup()
@@ -23,7 +63,8 @@ cum_normal_fun2 <- function(x, p) suppressWarnings(pnorm(x, p[3], p[2]))
 
 par_df <- crossing(participant = 1:2,
                    parn = c("p1", "p2", "p3")) %>%
-  mutate(par = 1)
+  mutate(par = 1) %>%
+  group_by(participant)
 
 fun_df <- tibble(size = c("large", "small"),
                  fun = c(cum_normal_fun, cum_normal_fun2)) %>%
@@ -34,7 +75,7 @@ fit <- quickpsy(dat12, x, k, n,
                 parini = par_df,
                 fun = fun_df)
 
-p <- fit$par$par
+p <- fit$par %>% filter(participant == 2) %>% pull(par)
 
 xseq <- seq(0, 2, .01)
 yseq1 <- cum_normal_fun(xseq, p)
@@ -47,6 +88,76 @@ ggplot(dat12) +
             aes(x = xseq, y = yseq1)) +
   geom_line(data = tibble(xseq, yseq2),
             aes(x = xseq, y = yseq2), color = "red")
+
+### dat12 4 parameters
+
+cum_normal_fun2 <- function(x, p) suppressWarnings(pnorm(x, p[3], p[4]))
+
+par_df <- crossing(participant = 1:2,
+                   parn = c("p1", "p2", "p3", "p4")) %>%
+  mutate(par = 1) %>%
+  group_by(participant)
+
+fun_df <- tibble(size = c("large", "small"),
+                 fun = c(cum_normal_fun, cum_normal_fun2)) %>%
+  group_by(size)
+
+fit <- quickpsy(dat12, x, k, n,
+                grouping = .(participant, size),
+                parini = par_df,
+                fun = fun_df)
+
+p <- fit$par %>% filter(participant == 2) %>% pull(par)
+
+xseq <- seq(0, 2, .01)
+yseq1 <- cum_normal_fun(xseq, p)
+yseq2 <- cum_normal_fun2(xseq, p)
+
+ggplot(dat12) +
+  facet_grid(.~participant) +
+  geom_point(aes(x = x, y = prob, color = size)) +
+  geom_line(data = tibble(xseq, yseq1),
+            aes(x = xseq, y = yseq1)) +
+  geom_line(data = tibble(xseq, yseq2),
+            aes(x = xseq, y = yseq2), color = "red")
+
+
+### dat1
+dat1<- dat %>%
+  filter(participant %in% c(2)) %>%
+  ungroup()
+
+cum_normal_fun2 <- function(x, p) suppressWarnings(pnorm(x, p[3], p[2]))
+
+par_df <- crossing(participant = 2,
+                   parn = c("p1", "p2", "p3")) %>%
+  mutate(par = 1)
+
+fun_df <- tibble(size = c("large", "small"),
+                 fun = c(cum_normal_fun, cum_normal_fun2)) %>%
+  group_by(size)
+
+fit <- quickpsy(dat1, x, k, n,
+                grouping = .(size),
+                parini = par_df,
+                fun = fun_df)
+
+
+p <- fit$par %>% pull(par)
+
+xseq <- seq(0, 2, .01)
+yseq1 <- cum_normal_fun(xseq, p)
+yseq2 <- cum_normal_fun2(xseq, p)
+
+ggplot(dat1) +
+  geom_point(aes(x = x, y = prob, color = size)) +
+  geom_line(data = tibble(xseq, yseq1),
+            aes(x = xseq, y = yseq1)) +
+  geom_line(data = tibble(xseq, yseq2),
+            aes(x = xseq, y = yseq2), color = "red")
+
+
+
 
 
 
@@ -161,10 +272,7 @@ ggplot(dat12) +
 
 
 
-ggplot(dat) +
-  facet_grid(. ~ participant) +
-  geom_point(aes(x = x, y = prob, color = size)) +
-  geom_line(aes(x = x, y = prob, color = size))
+
 
 ### dat 1 large
 dat1l <- dat %>% filter(participant == 1, size == "large")

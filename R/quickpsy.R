@@ -169,7 +169,7 @@ quickpsy <- function(d, x = x, k = k, n = n,
 
    ### Calling functions
   nll_fun <- 5
-  param <- 5
+  par<- 5
 
    averages <- averages(d, x, k, n, groups, log)
 
@@ -177,7 +177,9 @@ quickpsy <- function(d, x = x, k = k, n = n,
 
    nll_fun <- nll_fun(averages, fun, x)
 
-   par <- param(nll_fun, parini)
+   param <- param(nll_fun, parini)
+
+   #ypred <-  ypred(par, averages, x, fun)
 
    # conditions <- averages %>% distinct(UQS(groups(averages)))
    # conditions_conjoint <- fun %>% select(-fun)
@@ -200,7 +202,7 @@ quickpsy <- function(d, x = x, k = k, n = n,
   #parini <- parini(averages, funname_df, x, guess, lapses, pariniset, parini)
 
 
-  # ypred <-  ypred(par, averages, x, psyfunguesslapses_df)
+
   #
   # curves <- curves(par, limits, log, psyfunguesslapses)
   #
@@ -219,7 +221,7 @@ quickpsy <- function(d, x = x, k = k, n = n,
     qp <- list(averages = averages,
                limits = limits,
                nll_fun = nll_fun,
-               par = par)
+               par = param)
 #                funname_df = funname_df,
 #                fun_df = fun_df,
 #                psyfunguesslapses_df =psyfunguesslapses_df,
