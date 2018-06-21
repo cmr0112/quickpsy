@@ -4,11 +4,11 @@
 #' @export create_nll
 create_nll <- function(d, fun_df, x) {
 
-  calculate_nll <- function(d, fun) {
+  calculate_nll <- function(d, psych_fun) {
     x <- d %>% select(!!x) %>% pull()
     eps <- .Machine$double.eps
 
-    phi <- fun(x, p)
+    phi <- psych_fun(x, p)
     phi[phi < eps] <- eps
     phi[phi > (1 - eps)] <- 1 - eps
 
@@ -16,11 +16,11 @@ create_nll <- function(d, fun_df, x) {
   }
 
   function(p) {
-    calculate_nll <- function(d, fun) {
+    calculate_nll <- function(d, psych_fun) {
       x <- d %>% select(!!x) %>% pull()
       eps <- .Machine$double.eps
 
-      phi <- fun(x, p)
+      phi <- psych_fun(x, p)
       phi[phi < eps] <- eps
       phi[phi > (1 - eps)] <- 1 - eps
 

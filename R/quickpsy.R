@@ -143,6 +143,8 @@ quickpsy <- function(d, x = x, k = k, n = n,
 
   k <- enquo(k)
 
+  psych_fun <- fun
+
   if (!missing(n)) n <- enquo(n)
   else n <- NULL
 
@@ -169,17 +171,18 @@ quickpsy <- function(d, x = x, k = k, n = n,
 
    ### Calling functions
   nll_fun <- 5
-  par<- 5
+  par <- 5
+  ypred <- 5
 
    averages <- averages(d, x, k, n, groups, log)
 
    limits <- limits(averages, x, xmin, xmax)
 
-   nll_fun <- nll_fun(averages, fun, x)
+   nll_fun <- nll_fun(averages, psych_fun, x)
 
    param <- param(nll_fun, parini)
 
-   #ypred <-  ypred(par, averages, x, fun)
+   ypred <-  ypred(averages, param, psych_fun, x)
 
    # conditions <- averages %>% distinct(UQS(groups(averages)))
    # conditions_conjoint <- fun %>% select(-fun)
@@ -220,8 +223,10 @@ quickpsy <- function(d, x = x, k = k, n = n,
 #
     qp <- list(averages = averages,
                limits = limits,
+               psych_fun = psych_fun,
                nll_fun = nll_fun,
-               par = param)
+               par = param,
+               ypred = ypred)
 #                funname_df = funname_df,
 #                fun_df = fun_df,
 #                psyfunguesslapses_df =psyfunguesslapses_df,

@@ -4,7 +4,7 @@
 \alias{nll_fun}
 \title{\code{nll_fun} Creates the negative log-likelihood function}
 \usage{
-nll_fun(averages, fun, x)
+nll_fun(averages, psych_fun, x)
 }
 \description{
 \code{nll_fun} Creates the negative log-likelihood function

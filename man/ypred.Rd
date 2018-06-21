@@ -4,7 +4,7 @@
 \alias{ypred}
 \title{Predicted probabilities}
 \usage{
-ypred(par, averages, x, psyfunguesslapses_df)
+ypred(averages, param, psy_fun, x)
 }
 \arguments{
 \item{qp}{output from quickpsy}

@@ -1,5 +1,5 @@
 library(quickpsy)
-library(MPDiR) #contains HSP
+library(MPDiR)
 library(tidyverse)
 
 pses <- c(1, 2, 3)
@@ -32,24 +32,15 @@ fun_df <- tibble(size = c("large", "small"),
                  fun = c(cum_normal_fun, cum_normal_fun2)) %>%
   group_by(size)
 
-fit <- quickpsy(dat , x, k, n,
+fit <- quickpsy(dat, x, k, n,
                 grouping = .(participant, size),
                 parini = par_df,
                 fun = fun_df)
 
-p <- fit$par %>% filter(participant == 1) %>% pull(par)
-
-xseq <- seq(0, 2, .01)
-yseq1 <- cum_normal_fun(xseq, p)
-yseq2 <- cum_normal_fun2(xseq, p)
-
 ggplot(dat) +
   facet_grid(.~participant) +
   geom_point(aes(x = x, y = prob, color = size)) +
-  geom_line(data = tibble(xseq, yseq1),
-            aes(x = xseq, y = yseq1)) +
-  geom_line(data = tibble(xseq, yseq2),
-            aes(x = xseq, y = yseq2), color = "red")
+  geom_line(data = fit$ypred, aes(x = x, y = y, color = size))
 
 
 
