@@ -2,7 +2,7 @@
 #' \code{curves} creates the curves
 #' @import dplyr
 #' @keywords internal
-#' @export
+#' @export curves
 curves <- function(par, limits, log, psyfunguesslapses) {
   one_curve <- function(par, limits, log, psyfunguesslapses) {
     x <- seq(limits$xmin, limits$xmax, length = 300)

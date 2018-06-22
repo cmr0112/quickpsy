@@ -8,10 +8,10 @@ apply_to_two_elements <- function(x, y, q) {
   enq_y <- enquo(y)
   y_df <- y %>% nest(everything(), .key = !!enq_y)
 
-
   if (length(groups(x)) != 0)
     df <- x_df %>% left_join(y_df, by = group_vars(x))
   else df <- x_df %>% bind_cols(y_df)
+
 
   df %>%
     mutate(temp = map2(!!enq_x, !!enq_y, q)) %>%

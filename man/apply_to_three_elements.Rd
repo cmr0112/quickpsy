@@ -2,10 +2,10 @@
 % Please edit documentation in R/apply_to_three_elements.R
 \name{apply_to_three_elements}
 \alias{apply_to_three_elements}
-\title{Apply function to two elements of a list}
+\title{Apply function to three elements of a list}
 \usage{
 apply_to_three_elements(x, y, z, q, ...)
 }
 \description{
-Apply function to two elements of a list
+Apply function to three elements of a list
 }

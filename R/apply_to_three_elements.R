@@ -1,4 +1,4 @@
-#' Apply function to two elements of a list
+#' Apply function to three elements of a list
 #' @export apply_to_three_elements
 apply_to_three_elements <- function(x, y, z, q, ...) {
 
@@ -7,8 +7,8 @@ apply_to_three_elements <- function(x, y, z, q, ...) {
 
   enq_y <- enquo(y)
   y_df <- y %>% nest(everything(), .key = !!enq_y)
-  enq_z <- enquo(z)
 
+  enq_z <- enquo(z)
   z_df <- z %>% nest(everything(), .key = !!enq_z)
 
   extra_vars <- quos(...)

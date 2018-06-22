@@ -5,6 +5,7 @@ nll_fun <- function(averages, psych_fun, x) {
 
   groups <- group_vars(averages) %>% setdiff(group_vars(psych_fun))
 
+
   averages_df <- averages %>%
     group_by_at(vars(groups)) %>%
     nest(.key = averages)
