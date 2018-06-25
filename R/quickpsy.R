@@ -158,22 +158,23 @@ quickpsy <- function(d, x = x, k = k, n = n,
   #   cat(paste("Fitting the following function: ", funname, "\n"))
   # }
 
-   if (missing(B) & bootstrap != "none")
-     cat(paste("Using only", B, "bootstrap samples.\n"))
+  if (missing(B) & bootstrap != "none")
+    cat(paste("Using only", B, "bootstrap samples.\n"))
 
-   if (!is.null(prob)) thresholds <- TRUE
+  if (!is.null(prob)) thresholds <- TRUE
 
-   if (is.null(parini)) pariniset <- FALSE
-   else pariniset <- TRUE
+  if (is.null(parini)) pariniset <- FALSE
+  else pariniset <- TRUE
 
-   if (is.logical(guess) && !guess) guess <- 0
-   if (is.logical(lapses) && !lapses) lapses <- 0
+  if (is.logical(guess) && !guess) guess <- 0
+  if (is.logical(lapses) && !lapses) lapses <- 0
 
-   ### Calling functions
+  ### Calling functions
   nll_fun <- 5
   param <- 5
   ypred <- 5
   curves <- 5
+  threshold <- 5
 
   averages <- averages(d, x, k, n, groups, log)
 
@@ -188,6 +189,8 @@ quickpsy <- function(d, x = x, k = k, n = n,
   x_seq <- x_seq(limits)
 
   curves <- ypred(x_seq, param, psych_fun, x)
+
+  thresholds <- thresholds(param, curves, psych_fun, prob, log, guess, lapses)
 
    # conditions <- averages %>% distinct(UQS(groups(averages)))
    # conditions_conjoint <- fun %>% select(-fun)
@@ -233,7 +236,8 @@ quickpsy <- function(d, x = x, k = k, n = n,
                par = param,
                ypred = ypred,
                x_seq = x_seq,
-               curves = curves)
+               curves = curves,
+               thresholds = thresholds)
 #                funname_df = funname_df,
 #                fun_df = fun_df,
 #                psyfunguesslapses_df =psyfunguesslapses_df,

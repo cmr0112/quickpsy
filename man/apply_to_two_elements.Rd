@@ -4,7 +4,7 @@
 \alias{apply_to_two_elements}
 \title{Apply function to two elements of a list}
 \usage{
-apply_to_two_elements(x, y, q)
+apply_to_two_elements(x, y, q, ...)
 }
 \description{
 Apply function to two elements of a list

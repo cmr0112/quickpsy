@@ -17,6 +17,7 @@ dat <- crossing(participant = 1:3, size = c("large", "small")) %>%
   ungroup()
 
 ### fit same slope
+#cum_normal_fun <- function(x, p) suppressWarnings(pnorm(x, p[1], p[2]))
 cum_normal_fun2 <- function(x, p) suppressWarnings(pnorm(x, p[3], p[2]))
 
 par_df <- crossing(participant = 1:3,
@@ -37,7 +38,11 @@ fit$nll_fun$nll_fun[[1]](c(1,1,1))
 ggplot(dat) +
   facet_grid(.~participant) +
   geom_point(aes(x = x, y = prob, color = size)) +
-  geom_line(data = fit$curves, aes(x = x, y = y, color = size))
+  geom_line(data = fit$curves, aes(x = x, y = y, color = size)) +
+  geom_segment(data = fit$thresholds, aes(x = thre, y = 0,
+                                xend = thre,
+                                yend = prob,
+                                color = size))
 
 ### fit same pse
 cum_normal_fun2 <- function(x, p) suppressWarnings(pnorm(x, p[1], p[3]))
@@ -57,7 +62,11 @@ fit <- quickpsy(dat, x, k, n, grouping = .(participant, size),
 ggplot(dat) +
   facet_grid(.~participant) +
   geom_point(aes(x = x, y = prob, color = size)) +
-  geom_line(data = fit$curves, aes(x = x, y = y, color = size))
+  geom_line(data = fit$curves, aes(x = x, y = y, color = size)) +
+  geom_segment(data = fit$thresholds, aes(x = thre, y = 0,
+                                          xend = thre,
+                                          yend = prob,
+                                          color = size))
 
 ### same slope and pse
 cum_normal_fun2 <- function(x, p) suppressWarnings(pnorm(x, p[1], p[2]))
@@ -77,7 +86,11 @@ fit <- quickpsy(dat, x, k, n, grouping = .(participant, size),
 ggplot(dat) +
   facet_grid(.~participant) +
   geom_point(aes(x = x, y = prob, color = size)) +
-  geom_line(data = fit$ypred, aes(x = x, y = y, color = size))
+  geom_line(data = fit$curves, aes(x = x, y = y, color = size)) +
+  geom_segment(data = fit$thresholds, aes(x = thre, y = 0,
+                                          xend = thre,
+                                          yend = prob,
+                                          color = size))
 
 ### different slope and pse
 cum_normal_fun2 <- function(x, p) suppressWarnings(pnorm(x, p[3], p[4]))
@@ -97,7 +110,12 @@ fit <- quickpsy(dat, x, k, n, grouping = .(participant, size),
 ggplot(dat) +
   facet_grid(.~participant) +
   geom_point(aes(x = x, y = prob, color = size)) +
-  geom_line(data = fit$curves, aes(x = x, y = y, color = size))
+  geom_line(data = fit$curves, aes(x = x, y = y, color = size)) +
+  geom_segment(data = fit$thresholds, aes(x = thre, y = 0,
+                                          xend = thre,
+                                          yend = prob,
+                                          color = size))
+
 
 
 

@@ -7,31 +7,36 @@
 #' has been used to fit the curves (default is \code{FALSE}).
 #' @export
 
-thresholds <- function(par, curves, prob, log, funname,
-                       guess, lapses){
-  one_threshold <- function(par, curves, prob, log, funname,
-                            guess, lapses) {
-    if (funname %in%  names(get_functions())) {
-      par <- par$par
-      if (is.numeric(guess) && is.numeric(lapses))
-        q <- (prob - guess) / (1 - guess - lapses)
-      if (is.logical(guess) && is.logical(lapses))
-        q <- (prob - par[3]) / (1 - par[3] - par[4])
-      if (is.logical(guess) && is.numeric(lapses))
-        q <- (prob - par[3]) / (1 - par[3] - lapses)
-      if (is.numeric(guess) && is.logical(lapses))
-        q <- (prob - guess) / (1 - guess - par[3])
+thresholds <- function(param, curves, psych_fun, prob, log, guess, lapses){
 
-      if (q < 0 || q > 1) {
-        thre <- approx(curves$y,curves$x, xout = prob)$y
+  one_threshold <- function(par, curves, psych_fun, prob, log, guess, lapses) {
+
+    if (length(psych_fun) == 1) {
+      if (psych_fun %in%  names(get_functions())) {
+        par <- par$par
+        if (is.numeric(guess) && is.numeric(lapses))
+          q <- (prob - guess) / (1 - guess - lapses)
+        if (is.logical(guess) && is.logical(lapses))
+          q <- (prob - par[3]) / (1 - par[3] - par[4])
+        if (is.logical(guess) && is.numeric(lapses))
+          q <- (prob - par[3]) / (1 - par[3] - lapses)
+        if (is.numeric(guess) && is.logical(lapses))
+          q <- (prob - guess) / (1 - guess - par[3])
+
+        if (q < 0 || q > 1) {
+          thre <- approx(curves$y,curves$x, xout = prob)$y
+        }
+        else {
+          if (psych_fun == "cum_normal_fun")
+            thre <- inv_cum_normal_fun(q, c(par[1], par[2]))
+          if (psych_fun == "logistic_fun")
+            thre <- inv_logistic_fun(q, c(par[1], par[2]))
+          if (psych_fun == "weibull_fun")
+            thre <- inv_weibull_fun(q, c(par[1], par[2]))
+        }
       }
       else {
-        if (funname == "cum_normal_fun")
-          thre <- inv_cum_normal_fun(q, c(par[1], par[2]))
-        if (funname == "logistic_fun")
-          thre <- inv_logistic_fun(q, c(par[1], par[2]))
-        if (funname == "weibull_fun")
-          thre <- inv_weibull_fun(q, c(par[1], par[2]))
+        thre <- approx(curves$y,curves$x, xout = prob)$y
       }
     }
     else {
@@ -42,14 +47,12 @@ thresholds <- function(par, curves, prob, log, funname,
     tibble(thre, prob)
   }
 
+
   if (is.null(prob)) {
     if (is.logical(guess) && guess) prob <- .5
     else  prob <- guess + .5 * (1 - guess)
   }
 
-  apply_to_two_elements(par, curves,
-                        ~one_threshold(.x, .y, prob, log, funname,
-                                       guess, lapses))
-
-
+  apply_to_two_elements(param, curves, one_threshold, psych_fun, prob, log,
+                        guess, lapses)
 }

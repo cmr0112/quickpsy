@@ -8,12 +8,4 @@ param <- function(nll_fun, parini) {
   }
 
   apply_to_two_elements(parini, nll_fun, calculate_par)
-
-  # parini %>%
-  #   group_by_at(vars(group_vars(nll_fun))) %>%
-  #   nest(.key = "parini") %>%
-  #   left_join(nll_fun, by = group_vars(nll_fun)) %>%
-  #   mutate(par = map2(parini, nll_fun, calculate_par)) %>%
-  #   select(-nll_fun, -parini) %>%
-  #   unnest(par)
 }

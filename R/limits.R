@@ -11,9 +11,9 @@ limits <- function(averages, x, xmin, xmax) {
 
   averages %>%
     nest(everything(), .key = averages) %>%
-    mutate(limits = map(averages, ~one_limit(.x, x, xmin, xmax))) %>%
+    mutate(limits = map(averages, one_limit, x, xmin, xmax)) %>%
     select(-averages) %>%
     unnest(limits) %>%
-    group_by(UQS(groups(averages)))
+    group_by_at(vars(group_vars(averages)))
 }
 
