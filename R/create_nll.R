@@ -2,42 +2,39 @@
 #' \code{create_nll} Creates the negative log-likelihood function
 #' @keywords internal
 #' @export create_nll
-create_nll <- function(d, fun_df, x) {
-
-  calculate_nll <- function(d, psych_fun) {
-    x <- d %>% select(!!x) %>% pull()
-    eps <- .Machine$double.eps
-
-    phi <- psych_fun(x, p)
-    phi[phi < eps] <- eps
-    phi[phi > (1 - eps)] <- 1 - eps
-
-    -sum(d$k * log(phi) + (d$n - d$k) * log(1 - phi))
-  }
-
+#'
+create_nll <- function(averages, psych_fun, x) {
   function(p) {
-    calculate_nll <- function(d, psych_fun) {
-      x <- d %>% select(!!x) %>% pull()
+    calculate_nll <- function(averages, psych_fun) {
+      x <- averages %>% select(!!x) %>% pull()
       eps <- .Machine$double.eps
 
       phi <- psych_fun(x, p)
       phi[phi < eps] <- eps
       phi[phi > (1 - eps)] <- 1 - eps
 
-      -sum(d$k * log(phi) + (d$n - d$k) * log(1 - phi))
+      -sum(averages$k * log(phi) + (averages$n - averages$k) * log(1 - phi))
     }
 
-    d %>%
-      ungroup() %>% # a lo mejor no hace falta
-      group_by_at(group_vars(fun_df)) %>%
-      nest() %>%
-      left_join(fun_df, by = group_vars(fun_df)) %>%
+    if (group_vars(psych_fun) == "dummy_group") {
+      nlls <- averages %>%
+        nest() %>%
+        bind_cols(psych_fun)
+       #mutate(fun = psych_fun$psych_fun)
+
+    }
+    else {
+      nlls <- averages %>%
+        group_by(!!!groups(psych_fun)) %>%
+        nest() %>%
+        left_join(psych_fun, by = group_vars(psych_fun))
+    }
+
+    nlls %>%
       mutate(nll = map2_dbl(data, fun, calculate_nll)) %>%
       summarise(nll = sum(nll))
 
   }
 }
-
-
 
 

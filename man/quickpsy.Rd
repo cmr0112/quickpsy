@@ -4,10 +4,10 @@
 \alias{quickpsy}
 \title{Fits psychometric functions}
 \usage{
-quickpsy(d, x = x, k = k, n = n, grouping, xmin = NULL, xmax = NULL,
-  log = FALSE, fun = cum_normal_fun, parini = NULL, guess = 0,
-  lapses = 0, prob = NULL, thresholds = TRUE, bootstrap = "parametric",
-  B = 100, ci = 0.95)
+quickpsy(d, x = x, k = k, n = n, grouping, xmin = NULL,
+  xmax = NULL, log = FALSE, fun = cum_normal_fun, parini = NULL,
+  guess = 0, lapses = 0, prob = NULL, thresholds = TRUE,
+  bootstrap = "parametric", B = 100, ci = 0.95)
 }
 \arguments{
 \item{d}{Data frame with the results of a Yes-No experiment to fit.

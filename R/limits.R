@@ -14,6 +14,6 @@ limits <- function(averages, x, xmin, xmax) {
     mutate(limits = map(averages, one_limit, x, xmin, xmax)) %>%
     select(-averages) %>%
     unnest(limits) %>%
-    group_by_at(vars(group_vars(averages)))
+    group_by(!!!(groups(averages)))
 }
 

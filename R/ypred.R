@@ -10,13 +10,15 @@
 #'                 grouping = .(Direction, WaveForm, TempFreq), B = 20)
 #' ypred(fit)
 #' @export ypred
-ypred <- function(averages, param, psy_fun, x) {
-  one_ypred <- function(averages, param, psy_fun, x) {
+ypred <- function(averages, param, psych_fun, x, log) {
+  one_ypred <- function(averages, param, psych_fun, x, log) {
     x <- averages %>% select(!!x) %>% pull()
-    y <- psy_fun$fun[[1]](x, param$par)
+
+    y <- psych_fun$fun[[1]](x, param$par)
+
     tibble(x, y)
   }
 
- apply_to_three_elements(averages, param, psy_fun, one_ypred, x)
+ apply_to_three_elements(averages, param, psych_fun, one_ypred, x, log)
 
 }

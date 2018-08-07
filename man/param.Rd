@@ -2,11 +2,11 @@
 % Please edit documentation in R/param.R
 \name{param}
 \alias{param}
-\title{\code{par} Param}
+\title{\code{param} Param}
 \usage{
 param(nll_fun, parini)
 }
 \description{
-\code{par} Param
+\code{param} Param
 }
 \keyword{internal}

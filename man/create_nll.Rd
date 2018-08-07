@@ -5,7 +5,7 @@
 \title{Creates the negative log-likelihood function
 \code{create_nll} Creates the negative log-likelihood function}
 \usage{
-create_nll(d, fun_df, x)
+create_nll(averages, psych_fun, x)
 }
 \description{
 Creates the negative log-likelihood function

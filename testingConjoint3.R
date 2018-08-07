@@ -7,7 +7,7 @@ slopes <- c(.3, .6, .9)
 
 dat <- crossing(participant = 1:3, size = c("large", "small")) %>%
   bind_cols(pse = c(.5, 0.7, 1, 1.5, 1.4, 1.6),
-            slope= c(.2, .4, .4, .8, .6, .3)) %>%
+            slope = c(.2, .4, .4, .8, .6, .3)) %>%
   crossing(x = seq(0, 2, .2)) %>%
   mutate(p = pnorm(x, pse, slope)) %>%
   rowwise() %>%
@@ -16,14 +16,206 @@ dat <- crossing(participant = 1:3, size = c("large", "small")) %>%
          prob = k / n) %>%
   ungroup()
 
+### single data
+dat1 <- dat %>%
+  filter(participant == 3, size == "small") %>%
+  select(-participant, -size)
+
+fit1 <- quickpsy(dat1, x, k, n, parini = c(1,1))
+fit1$nll_fun$nll_fun[[1]](c(1,1,1))
+
+ggplot(dat1) +
+  geom_point(aes(x = x, y = prob)) +
+  geom_line(data = fit1$curves, aes(x = x, y = y))
+
+
+
+
 ### fit same slope
-#cum_normal_fun <- function(x, p) suppressWarnings(pnorm(x, p[1], p[2]))
+cum_normal_fun <- function(x, p) suppressWarnings(pnorm(x, p[1], p[2]))
 cum_normal_fun2 <- function(x, p) suppressWarnings(pnorm(x, p[3], p[2]))
 
-par_df <- crossing(participant = 1:3,
+fun_df <- tibble(size = c("large", "small"),
+                 fun = c(cum_normal_fun, cum_normal_fun2))
+#fun_df <- cum_normal_fun
+
+pini <- crossing(participant = 1:3,
                    parn = c("p1", "p2", "p3")) %>%
-  mutate(par = 1) %>%
+  mutate(par = 2) %>%
   group_by(participant)
+
+# pini <- crossing(participant = 1:3,
+#                  parn = c("p1", "p2", "p3")) %>%
+#   mutate(parmin = 0, parmax = 2) %>%
+#   group_by(participant)
+
+
+# pini <- c(1, 1, 1)
+#pini <- list(c(0, 2), c(0, 2), c(0, 2))
+
+fit <- quickpsy(dat, x, k, n,
+                grouping = .(participant, size),
+                parini = pini,
+                fun = fun_df)
+
+fit$nll_fun$nll_fun[[1]](c(1,1,1))
+
+ggplot(dat) +
+  facet_grid(.~participant) +
+  geom_point(aes(x = x, y = prob, color = size)) +
+  geom_line(data = fit$ypred, aes(x = x, y = y, color = size))
+
+### fit same pse
+cum_normal_fun <- function(x, p) suppressWarnings(pnorm(x, p[1], p[2]))
+cum_normal_fun2 <- function(x, p) suppressWarnings(pnorm(x, p[1], p[3]))
+
+fun_df <- tibble(size = c("large", "small"),
+                 fun = c(cum_normal_fun, cum_normal_fun2))
+#fun_df <- cum_normal_fun
+
+# pini <- crossing(participant = 1:3,
+#                  parn = c("p1", "p2", "p3")) %>%
+#   mutate(par = 2) %>%
+#   group_by(participant)
+
+
+#pini <- c(1, 1, 1)
+pini <- list(c(0, 2), c(0, 2), c(0, 2))
+
+
+fit <- quickpsy(dat, x, k, n,
+                grouping = .(participant, size),
+                parini = pini,
+                fun = fun_df)
+
+fit$nll_fun$nll_fun[[1]](c(1,1,1))
+
+ggplot(dat) +
+  facet_grid(.~participant) +
+  geom_point(aes(x = x, y = prob, color = size)) +
+  geom_line(data = fit$curves, aes(x = x, y = y, color = size))
+
+### fit dif pse dif slope
+cum_normal_fun <- function(x, p) suppressWarnings(pnorm(x, p[1], p[2]))
+cum_normal_fun2 <- function(x, p) suppressWarnings(pnorm(x, p[3], p[4]))
+
+fun_df <- tibble(size = c("large", "small"),
+                 fun = c(cum_normal_fun, cum_normal_fun2))
+#fun_df <- cum_normal_fun
+
+pini <- crossing(participant = 1:3,
+                 parn = c("p1", "p2", "p3", "p4")) %>%
+  mutate(par = 2) %>%
+  group_by(participant)
+
+
+ pini <- c(1, 1, 1, 1)
+ pini <- list(c(0, 2), c(0, 2), c(0, 2), c(0, 2))
+
+
+fit <- quickpsy(dat, x, k, n,
+                grouping = .(participant, size),
+                parini = pini,
+                fun = fun_df)
+
+fit$nll_fun$nll_fun[[1]](c(1,1,1,1))
+
+ggplot(dat) +
+  facet_grid(.~participant) +
+  geom_point(aes(x = x, y = prob, color = size)) +
+  geom_line(data = fit$curves, aes(x = x, y = y, color = size))
+
+
+### fit dif pse dif slope: single function
+pini <- c(1, 1)
+
+fit <- quickpsy(dat, x, k, n,
+                grouping = .(participant, size),
+                parini = pini)
+
+fit$nll_fun$nll_fun[[1]](c(1,1))
+
+ggplot(dat) +
+  facet_grid(.~participant) +
+  geom_point(aes(x = x, y = prob, color = size)) +
+  geom_line(data = fit$curves, aes(x = x, y = y, color = size))
+
+
+
+
+
+
+
+
+
+  +
+  geom_line(data = tibble(x = xseq, y = yseq1), aes(x = x, y = y))
+
+
++
+  geom_segment(data = fit$thresholds, aes(x = thre, y = 0,
+                                xend = thre,
+                                yend = prob,
+                                color = size))
+
+
+p <- fit$par %>%
+  filter(participant == 2, size == "large") %>%
+  pull(par)
+
+xseq <- seq(0, 2, .01)
+yseq1 <- cum_normal_fun(xseq, p)
+
+
+
+
+
+
+### fit same slope
+cum_normal_fun <- function(x, p) suppressWarnings(pnorm(x, p[1], p[2]))
+cum_normal_fun2 <- function(x, p) suppressWarnings(pnorm(x, p[3], p[2]))
+
+# pini <- crossing(participant = 1:3,
+#                  parn = c("p1", "p2", "p3")) %>%
+#   mutate(par = 2) %>%
+#   group_by(participant)
+
+pini <- crossing(participant = 1:3, size = c("small", "large"),
+                 parn = c("p1", "p2", "p3")) %>%
+  mutate(par = 2) %>%
+  group_by(participant)
+
+pini <- c(1, 1)
+#pini <- list(c(0, 2), c(0, 2), c(0, 2))
+
+fun_df <- tibble(size = c("large", "small"),
+                  fun = c(cum_normal_fun, cum_normal_fun2))
+
+fun_df <- cum_normal_fun
+
+fit <- quickpsy(dat, x, k, n,
+                grouping = .(participant, size),
+                parini = pini,
+                fun = fun_df)
+
+fit$nll_fun$nll_fun[[1]](c(1,1,1))
+
+ggplot(dat) +
+  facet_grid(.~participant) +
+  geom_point(aes(x = x, y = prob, color = size)) +
+  geom_line(data = fit$ypred, aes(x = x, y = y, color = size)) #+
+  # geom_segment(data = fit$thresholds, aes(x = thre, y = 0,
+  #                                         xend = thre,
+  #                                         yend = prob,
+  #                                         color = size))
+
+
+
+
+
+
+# parmin y parmax
+pini <- list(c(0, 2), c(0, 2), c(0, 2))
 
 fun_df <- tibble(size = c("large", "small"),
                  fun = c(cum_normal_fun, cum_normal_fun2)) %>%
@@ -40,17 +232,15 @@ ggplot(dat) +
   geom_point(aes(x = x, y = prob, color = size)) +
   geom_line(data = fit$curves, aes(x = x, y = y, color = size)) +
   geom_segment(data = fit$thresholds, aes(x = thre, y = 0,
-                                xend = thre,
-                                yend = prob,
-                                color = size))
+                                          xend = thre,
+                                          yend = prob,
+                                          color = size))
+
 
 ### fit same pse
 cum_normal_fun2 <- function(x, p) suppressWarnings(pnorm(x, p[1], p[3]))
 
-par_df <- crossing(participant = 1:3,
-                   parn = c("p1", "p2", "p3")) %>%
-  mutate(par = 1) %>%
-  group_by(participant)
+pini <- list(c(0, 2), c(0, 2), c(0, 2))
 
 fun_df <- tibble(size = c("large", "small"),
                  fun = c(cum_normal_fun, cum_normal_fun2)) %>%
@@ -100,8 +290,10 @@ par_df <- crossing(participant = 1:3,
   mutate(par = 1) %>%
   group_by(participant)
 
+par_df = c(1,1,1)
+
 fun_df <- tibble(size = c("large", "small"),
-                 fun = c(cum_normal_fun, cum_normal_fun2)) %>%
+                 psych_fun = c(cum_normal_fun, cum_normal_fun2)) %>%
   group_by(size)
 
 fit <- quickpsy(dat, x, k, n, grouping = .(participant, size),

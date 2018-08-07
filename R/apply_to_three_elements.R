@@ -2,6 +2,7 @@
 #' @export apply_to_three_elements
 apply_to_three_elements <- function(x, y, z, q, ...) {
 
+
   enq_x <- enquo(x)
   x_df <- x %>% nest(everything(), .key = !!enq_x)
 
@@ -11,19 +12,40 @@ apply_to_three_elements <- function(x, y, z, q, ...) {
   enq_z <- enquo(z)
   z_df <- z %>% nest(everything(), .key = !!enq_z)
 
+  print(x_df)
+  print(y_df)
+  print(z_df)
+
   extra_vars <- quos(...)
 
-  if (length(groups(x)) != 0) {
-    df <- x_df %>%
+  df <- x_df %>%
     left_join(y_df, by = group_vars(y)) %>%
     left_join(z_df, by = group_vars(z))
-  }
-  else {
-    df <- x_df %>%
-      bind_cols(y_df) %>%
-      bind_cols(z_df)
 
-  }
+
+
+  print(df)
+  # if (length(groups(z)) != 0) {
+  #   df <- df %>%
+  #     left_join(z_df, by = group_vars(z))
+  # }
+  # else {
+  #   df <- df %>%
+  #     mutate(!!quo_name(enq_z) := list(z_df))
+  # }
+  #
+
+
+  # if (length(groups(x)) != 0) {
+  #   df <- x_df %>%
+  #   left_join(y_df, by = group_vars(y)) %>%
+  #   left_join(z_df, by = group_vars(z))
+  # }
+  # else {
+  #   df <- x_df %>%
+  #     bind_cols(y_df) %>%
+  #     bind_cols(z_df)
+  # }
 
   df %>%
     mutate(temp = pmap(list(!!enq_x, !!enq_y, !!enq_z), q, !!!extra_vars)) %>%

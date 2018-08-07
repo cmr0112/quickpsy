@@ -10,14 +10,15 @@ apply_to_two_elements <- function(x, y, q, ...) {
 
   extra_vars <- quos(...)
 
-  if (length(groups(x)) != 0)
-    df <- x_df %>% left_join(y_df, by = group_vars(x))
-  else df <- x_df %>% bind_cols(y_df)
+  df <- x_df %>% left_join(y_df, by = group_vars(x))
 
+  # if (length(groups(x)) != 0)
+  #   df <- x_df %>% left_join(y_df, by = group_vars(x))
+  # else df <- x_df %>% bind_cols(y_df)
 
   df %>%
-    mutate(temp = map2(!!enq_x, !!enq_y, q, !!!extra_vars)) %>%
-    select(-!!enq_x, -!!enq_y) %>%
-    unnest(temp) %>%
-    group_by(UQS(groups(x)))
+  mutate(temp = map2(!!enq_x, !!enq_y, q, !!!extra_vars)) %>%
+  select(-!!enq_x, -!!enq_y) %>%
+  unnest(temp) %>%
+  group_by(UQS(groups(x)))
 }

@@ -13,16 +13,14 @@ averages <- function(d, x, k, n, groups, log) {
       summarise(n = n(), k = sum(k))
   }
   else {
-    averages <- d %>%
-      rename(k = !!k, n = !!n)
+    averages <- d %>% rename(k = !!k, n = !!n)
   }
 
-  if (!is.null(groups)) averages <- averages %>% group_by(!!!syms(groups))
+  if (!is.null(groups)) averages <- averages %>% group_by(!!!groups)
 
   averages <- averages %>% mutate(prob = k / n)
 
-  name_x <- quo_name(x)
-  if (log) averages <- averages %>% mutate(!!name_x := log(!!x))
+  if (log) averages <- averages %>% mutate(!!quo_name(x) := log(!!x))
 
   averages
 }

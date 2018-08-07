@@ -143,15 +143,20 @@ quickpsy <- function(d, x = x, k = k, n = n,
 
   k <- enquo(k)
 
-  psych_fun <- fun
-
   if (!missing(n)) n <- enquo(n)
   else n <- NULL
 
-  if (!missing(grouping)) grouping <- as.character(enexpr(grouping))[-1]
+  if (!missing(grouping)) {
+    groups <- syms(as.character(enexpr(grouping))[-1])
+  }
+  else {
+    d <- d %>%
+      ungroup() %>%
+      mutate(dummy_group = "g")
+    groups <- syms("dummy_group")
+  }
 
-  groups <- c()
-  if (!missing(grouping)) groups <- c(groups, grouping)
+
 
   # funname <- quo_name(enquo(fun))
   # if (funname %in% names(get_functions())) {
@@ -159,7 +164,7 @@ quickpsy <- function(d, x = x, k = k, n = n,
   # }
 
   if (missing(B) & bootstrap != "none")
-    cat(paste("Using only", B, "bootstrap samples.\n"))
+    cat(paste("Using only", B, "bootstrap samples. Use the B argument, to modify it.\n"))
 
   if (!is.null(prob)) thresholds <- TRUE
 
@@ -173,6 +178,7 @@ quickpsy <- function(d, x = x, k = k, n = n,
   nll_fun <- 5
   param <- 5
   ypred <- 5
+  x_seq <- 5
   curves <- 5
   threshold <- 5
 
@@ -180,17 +186,22 @@ quickpsy <- function(d, x = x, k = k, n = n,
 
   limits <- limits(averages, x, xmin, xmax)
 
+  psych_fun <- psych_fun(fun, guess, lapses)
+
   nll_fun <- nll_fun(averages, psych_fun, x)
+
+  parini <- parini(averages, parini, psych_fun)
 
   param <- param(nll_fun, parini)
 
-  ypred <- ypred(averages, param, psych_fun, x)
+  ypred <- ypred(averages, param, psych_fun, x, log)
 
   x_seq <- x_seq(limits)
 
-  curves <- ypred(x_seq, param, psych_fun, x)
+  curves <- ypred(x_seq, param, psych_fun, x, log)
 
-  thresholds <- thresholds(param, curves, psych_fun, prob, log, guess, lapses)
+  #
+  # thresholds <- thresholds(param, curves, psych_fun, prob, log, guess, lapses)
 
    # conditions <- averages %>% distinct(UQS(groups(averages)))
    # conditions_conjoint <- fun %>% select(-fun)
@@ -228,16 +239,22 @@ quickpsy <- function(d, x = x, k = k, n = n,
   #                                       x, k, n, psyfunguesslapses)
   #
   # deviance <- deviance(logliks, loglikssaturated)
-#
-    qp <- list(averages = averages,
-               limits = limits,
-               psych_fun = psych_fun,
-               nll_fun = nll_fun,
-               par = param,
-               ypred = ypred,
-               x_seq = x_seq,
-               curves = curves,
-               thresholds = thresholds)
+
+  if (log) {
+    averages <- averages %>% mutate(!!quo_name(x) := exp(!!x))
+    curves$x <- exp(curves$x)
+  }
+
+  qp <- list(averages = averages,
+             limits = limits,
+             psych_fun = psych_fun,
+             nll_fun = nll_fun,
+             parini = parini,
+             par = param,
+             ypred = ypred,
+             x_seq = x_seq,
+             curves = curves,
+             thresholds = thresholds)
 #                funname_df = funname_df,
 #                fun_df = fun_df,
 #                psyfunguesslapses_df =psyfunguesslapses_df,
