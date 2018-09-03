@@ -56,6 +56,9 @@ the probit-transformed data. Otherwise, \code{parini} could be
   \item a dataframe specifiying the initial parameters for each condition
   with the same structure that the output \code{par},
   but without the confidence intervals.
+  \item a dataframe specifiying the lower (the column should be called
+  parmin) and upper bounds (the column should be called parmax) for
+  each condition.
  }}
 
 \item{guess}{Value indicating the guess rate \eqn{\gamma} (default is 0). If

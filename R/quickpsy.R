@@ -43,6 +43,9 @@
 #'   \item a dataframe specifiying the initial parameters for each condition
 #'   with the same structure that the output \code{par},
 #'   but without the confidence intervals.
+#'   \item a dataframe specifiying the lower (the column should be called
+#'   parmin) and upper bounds (the column should be called parmax) for
+#'   each condition.
 #'  }
 #' @param guess Value indicating the guess rate \eqn{\gamma} (default is 0). If
 #' \code{TRUE}, the guess rate is estimated as the i + 1 paramEter where
@@ -195,10 +198,10 @@ quickpsy <- function(d, x = x, k = k, n = n,
   param <- param(nll_fun, parini)
 
   ypred <- ypred(averages, param, psych_fun, x, log)
-
-  x_seq <- x_seq(limits)
-
-  curves <- ypred(x_seq, param, psych_fun, x, log)
+  #
+  # x_seq <- x_seq(limits)
+  #
+  # curves <- ypred(x_seq, param, psych_fun, x, log)
 
   #
   # thresholds <- thresholds(param, curves, psych_fun, prob, log, guess, lapses)

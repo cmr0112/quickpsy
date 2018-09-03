@@ -12,9 +12,6 @@ apply_to_three_elements <- function(x, y, z, q, ...) {
   enq_z <- enquo(z)
   z_df <- z %>% nest(everything(), .key = !!enq_z)
 
-  print(x_df)
-  print(y_df)
-  print(z_df)
 
   extra_vars <- quos(...)
 
@@ -23,8 +20,6 @@ apply_to_three_elements <- function(x, y, z, q, ...) {
     left_join(z_df, by = group_vars(z))
 
 
-
-  print(df)
   # if (length(groups(z)) != 0) {
   #   df <- df %>%
   #     left_join(z_df, by = group_vars(z))

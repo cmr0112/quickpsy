@@ -5,8 +5,6 @@ param <- function(nll_fun, parini) {
   calculate_par <- function(parini, nll_fun) {
 
     if ("par" %in% names(parini)) {
-      print(parini$par)
-      print(nll_fun$nll_fun[[1]](c(1,1,1)))
       param <- optim(parini$par,
                      nll_fun$nll_fun[[1]])$par
 

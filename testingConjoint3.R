@@ -1,5 +1,6 @@
 library(MPDiR)
 library(tidyverse)
+library(quickpsy)
 
 ### create data
 pses <- c(1, 2, 3)
@@ -18,17 +19,21 @@ dat <- crossing(participant = 1:3, size = c("large", "small")) %>%
 
 ### single data
 dat1 <- dat %>%
-  filter(participant == 3, size == "small") %>%
+  filter(participant == 1, size == "small") %>%
   select(-participant, -size)
 
-fit1 <- quickpsy(dat1, x, k, n, parini = c(1,1))
-fit1$nll_fun$nll_fun[[1]](c(1,1,1))
+pini <- c(1, 1)
+pini <- list(c(.2, .3), c(.1, .6))
+pini <- tibble(parn = c("p1", "p2"), par = c(1, 1))
+pini <- tibble(parn = c("p1", "p2"), parmin = c(.2, .1), parmax = c(.3, .6))
+
+fit1 <- quickpsy(dat1, x, k, n, parini = pini)
+
+fit1$nll_fun$nll_fun[[1]](c(1, 1))
 
 ggplot(dat1) +
   geom_point(aes(x = x, y = prob)) +
   geom_line(data = fit1$curves, aes(x = x, y = y))
-
-
 
 
 ### fit same slope
@@ -37,21 +42,20 @@ cum_normal_fun2 <- function(x, p) suppressWarnings(pnorm(x, p[3], p[2]))
 
 fun_df <- tibble(size = c("large", "small"),
                  fun = c(cum_normal_fun, cum_normal_fun2))
-#fun_df <- cum_normal_fun
-
-pini <- crossing(participant = 1:3,
-                   parn = c("p1", "p2", "p3")) %>%
-  mutate(par = 2) %>%
-  group_by(participant)
 
 # pini <- crossing(participant = 1:3,
-#                  parn = c("p1", "p2", "p3")) %>%
-#   mutate(parmin = 0, parmax = 2) %>%
+#                    parn = c("p1", "p2", "p3")) %>%
+#   mutate(par = 2) %>%
 #   group_by(participant)
 
+pini <- crossing(participant = 1:3,
+                 parn = c("p1", "p2", "p3")) %>%
+  mutate(parmin = 0, parmax = 2) %>%
+  group_by(participant)
 
-# pini <- c(1, 1, 1)
-#pini <- list(c(0, 2), c(0, 2), c(0, 2))
+
+#pini <- c(1, 1, 1)
+pini <- list(c(0, 2), c(0, 2), c(0, 2))
 
 fit <- quickpsy(dat, x, k, n,
                 grouping = .(participant, size),
@@ -63,7 +67,7 @@ fit$nll_fun$nll_fun[[1]](c(1,1,1))
 ggplot(dat) +
   facet_grid(.~participant) +
   geom_point(aes(x = x, y = prob, color = size)) +
-  geom_line(data = fit$ypred, aes(x = x, y = y, color = size))
+  geom_line(data = fit$curves, aes(x = x, y = y, color = size))
 
 ### fit same pse
 cum_normal_fun <- function(x, p) suppressWarnings(pnorm(x, p[1], p[2]))
