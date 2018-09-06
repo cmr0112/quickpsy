@@ -29,10 +29,7 @@ parini <- function(averages, parini, psych_fun) {
   else if (is.data.frame(parini)) {
     parini <- conditions %>%
       crossing(parini)
-
   }
-
-  print(parini)
 
   parini %>%
     group_by(!!!groups)

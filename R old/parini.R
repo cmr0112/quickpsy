@@ -95,8 +95,7 @@ parini <- function(averages, funname_df, x, guess, lapses,
                        par = parini)
       parini <- expand(averages %>% distinct(UQS(groups(averages))), parini)
       }
-    else
-      if(is.list(parini)) {
+  else if(is.list(parini)) {
         parini <- matrix(unlist(parini), ncol = 2, byrow = TRUE) %>% as_tibble()
         names(parini) <- c("parmin", "parmax")
         parini <- tibble(parn = paste0("p", seq(1, nrow(parini)))) %>%

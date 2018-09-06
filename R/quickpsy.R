@@ -100,7 +100,7 @@
 #'   \item \code{logliks} Log-likelihoods of the model.
 #'   \item \code{loglikssaturated} Log-likelihoods of the saturated model.
 #'   \item \code{deviance} Deviance of the model and the p-value calculated by
-#'    bootstraping.
+#'    using the chi-square distribution and bootstraping.
 #'   \item \code{aic} AIC of the model defined as \deqn{ - 2 * loglik + 2  *k}
 #'   where k is the number of parameters of the model.
 #' }
@@ -159,15 +159,13 @@ quickpsy <- function(d, x = x, k = k, n = n,
     groups <- syms("dummy_group")
   }
 
-
-
-  # funname <- quo_name(enquo(fun))
-  # if (funname %in% names(get_functions())) {
-  #   cat(paste("Fitting the following function: ", funname, "\n"))
-  # }
+  #if (is.function(fun)) funname <- quo_name(enquo(fun))
+  if (is.function(fun)) funname <- deparse(substitute(fun))
+  else funname <- "no_default"
 
   if (missing(B) & bootstrap != "none")
-    cat(paste("Using only", B, "bootstrap samples. Use the B argument, to modify it.\n"))
+    cat(paste("Using only", B,
+              "bootstrap samples. Use the B argument, to modify it.\n"))
 
   if (!is.null(prob)) thresholds <- TRUE
 
@@ -184,6 +182,9 @@ quickpsy <- function(d, x = x, k = k, n = n,
   x_seq <- 5
   curves <- 5
   threshold <- 5
+  sse <- 5
+  aic <- 5
+  deviance <- 5
 
   averages <- averages(d, x, k, n, groups, log)
 
@@ -191,57 +192,41 @@ quickpsy <- function(d, x = x, k = k, n = n,
 
   psych_fun <- psych_fun(fun, guess, lapses)
 
-  nll_fun <- nll_fun(averages, psych_fun, x)
+  nll_fun <- nll_fun(averages, psych_fun, x, create_nll)
 
-  parini <- parini(averages, parini, psych_fun)
+  nll_fun_saturated <- nll_fun(averages, psych_fun, x, create_nll_saturated)
+
+  if (is.null(parini) & (funname %in% names(get_functions()))) {
+    parini <- calculate_parini(averages, funname, x, guess, lapses)
+  }
+  else if (is.null(parini) & !(funname %in% names(get_functions()))){
+    stop("parini (initial parameters) must be specified.", call. = FALSE)
+  }
+  else {
+    parini <- parini(averages, parini, psych_fun)
+  }
 
   param <- param(nll_fun, parini)
 
   ypred <- ypred(averages, param, psych_fun, x, log)
-  #
-  # x_seq <- x_seq(limits)
-  #
-  # curves <- ypred(x_seq, param, psych_fun, x, log)
 
-  #
-  # thresholds <- thresholds(param, curves, psych_fun, prob, log, guess, lapses)
+  x_seq <- x_seq(limits)
 
-   # conditions <- averages %>% distinct(UQS(groups(averages)))
-   # conditions_conjoint <- fun %>% select(-fun)
-   #
-   # conditions_conjoint_names <- fun %>%
-   #   select(-fun) %>%
-   #   colnames()
-   #
-   # fun <- fun %>%
-   #   group_by_at(vars(conditions_conjoint_names))
+  curves <- ypred(x_seq, param, psych_fun, x, log)
 
+  if (thresholds) {
+    thresholds <- thresholds(param, curves, psych_fun, prob, log, guess, lapses)
+  }
 
-   #funname_df <- funname_df(conditions, funname)
+  sse <-  sse(averages, ypred)
 
-  # fun_df <- fun_df(conditions, fun)
-  #
-  #  psyfunguesslapses_df <- psyfunguesslapses_df(fun_df, guess, lapses)
+  logliks <- logliks(nll_fun, param)
 
+  loglikssaturated <- logliks_saturated(nll_fun_saturated, averages)
 
-  #parini <- parini(averages, funname_df, x, guess, lapses, pariniset, parini)
+  aic <- akaike(logliks, param)
 
-
-
-  #
-  # curves <- curves(par, limits, log, psyfunguesslapses)
-  #
-  # sse <-  sse(averages, ypred)
-  #
-  # if (thresholds) thresholds <-  thresholds(par, curves, prob, log, funname,
-  #                                           guess, lapses)
-  #
-  # logliks <- logliks(averages, par, x, psyfunguesslapses)
-  #
-  # loglikssaturated <-  loglikssaturated(averages, par,
-  #                                       x, k, n, psyfunguesslapses)
-  #
-  # deviance <- deviance(logliks, loglikssaturated)
+  deviance <- devi(logliks, loglikssaturated)
 
   if (log) {
     averages <- averages %>% mutate(!!quo_name(x) := exp(!!x))
@@ -252,12 +237,18 @@ quickpsy <- function(d, x = x, k = k, n = n,
              limits = limits,
              psych_fun = psych_fun,
              nll_fun = nll_fun,
+             nll_fun_saturated = nll_fun_saturated,
              parini = parini,
              par = param,
              ypred = ypred,
              x_seq = x_seq,
              curves = curves,
-             thresholds = thresholds)
+             thresholds = thresholds,
+             sse = sse,
+             logliks = logliks,
+             loglikssaturated = loglikssaturated,
+             deviance = deviance,
+             aic = aic)
 #                funname_df = funname_df,
 #                fun_df = fun_df,
 #                psyfunguesslapses_df =psyfunguesslapses_df,

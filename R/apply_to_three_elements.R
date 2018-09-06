@@ -15,9 +15,33 @@ apply_to_three_elements <- function(x, y, z, q, ...) {
 
   extra_vars <- quos(...)
 
-  df <- x_df %>%
-    left_join(y_df, by = group_vars(y)) %>%
-    left_join(z_df, by = group_vars(z))
+  print(z)
+  print(z_df)
+  print(group_vars(z))
+
+  if (group_vars(y) == "dummy_group") {
+    x_df_g <- x_df %>%
+      mutate(dummy_group = "g")
+
+    df <- x_df_g %>%
+      left_join(y_df, by = group_vars(y))
+  }
+  else {
+    df <- x_df %>%
+      left_join(y_df, by = group_vars(y))
+  }
+
+  if (group_vars(z) == "dummy_group") {
+    df_g <- df %>%
+      mutate(dummy_group = "g")
+
+    df <- df_g %>%
+      left_join(z_df, by = group_vars(z))
+  }
+  else {
+    df <- df %>%
+      left_join(y_df, by = group_vars(y))
+  }
 
 
   # if (length(groups(z)) != 0) {

@@ -27,13 +27,16 @@ pini <- list(c(.2, .3), c(.1, .6))
 pini <- tibble(parn = c("p1", "p2"), par = c(1, 1))
 pini <- tibble(parn = c("p1", "p2"), parmin = c(.2, .1), parmax = c(.3, .6))
 
-fit1 <- quickpsy(dat1, x, k, n, parini = pini)
+fit1 <- quickpsy(dat1, x, k, n)
 
 fit1$nll_fun$nll_fun[[1]](c(1, 1))
 
 ggplot(dat1) +
   geom_point(aes(x = x, y = prob)) +
-  geom_line(data = fit1$curves, aes(x = x, y = y))
+  geom_line(data = fit1$curves, aes(x = x, y = y)) +
+  geom_segment(data = fit1$thresholds, aes(x = thre, y = 0,
+                                          xend = thre,
+                                          yend = prob))
 
 
 ### fit same slope
@@ -67,7 +70,11 @@ fit$nll_fun$nll_fun[[1]](c(1,1,1))
 ggplot(dat) +
   facet_grid(.~participant) +
   geom_point(aes(x = x, y = prob, color = size)) +
-  geom_line(data = fit$curves, aes(x = x, y = y, color = size))
+  geom_line(data = fit$curves, aes(x = x, y = y, color = size)) +
+  geom_segment(data = fit$thresholds, aes(x = thre, y = 0,
+                                           xend = thre,
+                                           yend = prob,
+                                          color = size))
 
 ### fit same pse
 cum_normal_fun <- function(x, p) suppressWarnings(pnorm(x, p[1], p[2]))
@@ -97,7 +104,11 @@ fit$nll_fun$nll_fun[[1]](c(1,1,1))
 ggplot(dat) +
   facet_grid(.~participant) +
   geom_point(aes(x = x, y = prob, color = size)) +
-  geom_line(data = fit$curves, aes(x = x, y = y, color = size))
+  geom_line(data = fit$curves, aes(x = x, y = y, color = size)) +
+  geom_segment(data = fit$thresholds, aes(x = thre, y = 0,
+                                          xend = thre,
+                                          yend = prob,
+                                          color = size))
 
 ### fit dif pse dif slope
 cum_normal_fun <- function(x, p) suppressWarnings(pnorm(x, p[1], p[2]))
@@ -127,7 +138,11 @@ fit$nll_fun$nll_fun[[1]](c(1,1,1,1))
 ggplot(dat) +
   facet_grid(.~participant) +
   geom_point(aes(x = x, y = prob, color = size)) +
-  geom_line(data = fit$curves, aes(x = x, y = y, color = size))
+  geom_line(data = fit$curves, aes(x = x, y = y, color = size))+
+  geom_segment(data = fit$thresholds, aes(x = thre, y = 0,
+                                          xend = thre,
+                                          yend = prob,
+                                          color = size))
 
 
 ### fit dif pse dif slope: single function
@@ -135,14 +150,19 @@ pini <- c(1, 1)
 
 fit <- quickpsy(dat, x, k, n,
                 grouping = .(participant, size),
-                parini = pini)
+                prob = .7)
 
 fit$nll_fun$nll_fun[[1]](c(1,1))
 
 ggplot(dat) +
   facet_grid(.~participant) +
   geom_point(aes(x = x, y = prob, color = size)) +
-  geom_line(data = fit$curves, aes(x = x, y = y, color = size))
+  geom_line(data = fit$curves, aes(x = x, y = y, color = size)) +
+  geom_segment(data = fit$thresholds,
+               aes(x = thre, xend = thre, y = 0, yend = prob,
+                   color = size))
+
+
 
 
 

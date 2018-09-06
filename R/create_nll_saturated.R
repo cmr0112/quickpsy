@@ -1,15 +1,15 @@
-#' Creates the negative log-likelihood function
-#' \code{create_nll} Creates the negative log-likelihood function
+#' Creates the saturated negative log-likelihood function
+#' \code{create_nll} Creates the saturatednegative log-likelihood function
 #' @keywords internal
-#' @export create_nll
+#' @export create_nll_saturated
 #'
-create_nll <- function(averages, psych_fun, x) {
+create_nll_saturated <- function(averages, psych_fun, x) {
   function(p) {
     calculate_nll <- function(averages, psych_fun) {
       x <- averages %>% select(!!x) %>% pull()
       eps <- .Machine$double.eps
 
-      phi <- psych_fun(x, p)
+      phi <- averages$k / averages$n
       phi[phi < eps] <- eps
       phi[phi > (1 - eps)] <- 1 - eps
 

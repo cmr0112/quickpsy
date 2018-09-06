@@ -18,7 +18,6 @@ param <- function(nll_fun, parini) {
                      upper = parini$parmax)$par
     }
 
-
     tibble(parn = paste0("p", seq(1, length(param))), par = param)
   }
 
