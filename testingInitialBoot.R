@@ -20,23 +20,31 @@ dat <- crossing(participant = 1:3, size = c("large", "small")) %>%
 ### single data
 dat1 <- dat %>%
   filter(participant == 1, size == "small") %>%
-  select(-participant, -size)
+  select(-participant, -size, -pse, -slope, -p, -prob)
 
 pini <- c(1, 1)
 pini <- list(c(.2, .3), c(.1, .6))
 pini <- tibble(parn = c("p1", "p2"), par = c(1, 1))
 pini <- tibble(parn = c("p1", "p2"), parmin = c(.2, .1), parmax = c(.3, .6))
 
-fit1 <- quickpsy(dat1, xx, k, n)
+fit1 <- quickpsy(dat1, xx, k, n, bootstrap = "nonparametric", B = 9)
+fit1
 
 fit1$nll_fun$nll_fun[[1]](c(1, 1))
 
-ggplot(dat1) +
-  geom_point(aes(x = xx, y = prob)) +
+ggplot() +
+  facet_wrap(~sample) +
+  geom_point(data = fit1$averages, aes(x = xx, y = prob)) +
+   geom_point(data = fit1$avbootstrap, aes(x = xx, y = prob,
+                                          color = factor(sample))) +
   geom_line(data = fit1$curves, aes(x = x, y = y)) +
+  geom_line(data = fit1$curvesbootstrap, aes(x = x, y = y,
+                                         color = factor(sample)),
+            size = .5) +
   geom_segment(data = fit1$thresholds, aes(x = thre, y = 0,
                                           xend = thre,
-                                          yend = prob))
+                                          yend = prob)) +
+  theme()
 
 
 ### fit same slope
@@ -60,18 +68,21 @@ pini <- crossing(participant = 1:3,
 #pini <- c(1, 1, 1)
 pini <- list(c(0, 2), c(0, 2), c(0, 2))
 
-fit <- quickpsy(dat, x, k, n,
+fit <- quickpsy(dat, xx, k, n,
                 grouping = .(participant, size),
                 parini = pini,
-                fun = fun_df)
+                fun = fun_df,
+                B = 3)
 
 fit$nll_fun$nll_fun[[1]](c(1,1,1))
 
-ggplot(dat) +
-  facet_grid(.~participant) +
-  geom_point(aes(x = x, y = prob, color = size)) +
-  geom_line(data = fit$curves, aes(x = x, y = y, color = size)) +
-  geom_segment(data = fit$thresholds, aes(x = thre, y = 0,
+ggplot() +
+  facet_grid(sample~participant) +
+  #geom_point(data = fit$averages, aes(x = xx, y = prob, color = size)) +
+  geom_point(data = fit$avbootstrap,
+            aes(x = xx, y = prob, color = size)) +
+  geom_line(data = fit$curvesbootstrap, aes(x = x, y = y, color = size)) +
+  geom_segment(data = fit$thresholdsbootstrap, aes(x = thre, y = 0,
                                            xend = thre,
                                            yend = prob,
                                           color = size))

@@ -1,6 +1,6 @@
 #' Fits psychometric functions
 #'
-#' \code{quickpsy} fits, by direct maximization of the likelihood
+#' \code{quickpsy_without_bootstrap} fits, by direct maximization of the likelihood
 #' (Prins and Kingdom, 2010; Knoblauch and Maloney, 2012),
 #'  psychometric functions of the form
 #' \deqn{\psi(x) = \gamma + (1 - \gamma - \lambda) * fun(x)}
@@ -131,138 +131,192 @@
 #' quantile qweibull rbinom
 #' @importFrom utils combn head read.table tail
 
-quickpsy <- function(d, x = x, k = k, n = n,
-                     grouping,
-                     xmin = NULL, xmax = NULL,
-                     log = FALSE,
-                     fun = cum_normal_fun,
-                     parini = NULL,
-                     guess = 0, lapses = 0,
-                     prob = NULL, thresholds = TRUE,
-                     bootstrap = "parametric", B = 100, ci = .95) {
+quickpsy_without_bootstrap <- function(d, x, k, n,
+                     groups,
+                     xmin, xmax,
+                     log,
+                     fun,
+                     funname,
+                     parini,
+                     guess, lapses,
+                     prob, thresholds) {
 
 
-  ### Working with the arguments
+  ### Calling functions
+  nll_fun <- 5
+  param <- 5
+  ypred <- 5
+  x_seq <- 5
+  curves <- 5
+  threshold <- 5
+  sse <- 5
+  aic <- 5
+  deviance <- 5
+  logliks <- 5
+  loglikssaturated <- 5
+  nll_fun_saturated <- 5
 
-  x <- enquo(x)
+  averages <- averages(d, x, k, n, groups, log)
 
-  k <- enquo(k)
+  limits <- limits(averages, x, xmin, xmax)
 
-  if (!missing(n)) n <- enquo(n)
-  else n <- NULL
+  psych_fun <- psych_fun(fun, guess, lapses)
 
-  if (!missing(grouping)) {
-    groups <- syms(as.character(enexpr(grouping))[-1])
+  nll_fun <- nll_fun(averages, psych_fun, x, create_nll)
+
+  nll_fun_saturated <- nll_fun(averages, psych_fun, x, create_nll_saturated)
+
+  if (is.null(parini) & (funname %in% names(get_functions()))) {
+    parini <- calculate_parini(averages, funname, x, guess, lapses)
+  }
+  else if (is.null(parini) & !(funname %in% names(get_functions()))){
+    stop("parini (initial parameters) must be specified.", call. = FALSE)
   }
   else {
-    d <- d %>%
-      ungroup() %>%
-      mutate(dummy_group = "g")
-    groups <- syms("dummy_group")
+    parini <- parini(averages, parini, psych_fun)
   }
 
-  #if (is.function(fun)) funname <- quo_name(enquo(fun))
-  if (is.function(fun)) funname <- deparse(substitute(fun))
-  else funname <- "no_default"
+  param <- param(nll_fun, parini)
 
-  if (missing(B) & bootstrap != "none")
-    cat(paste("Using only", B,
-              "bootstrap samples. Use the B argument, to modify it.\n"))
+  ypred <- ypred(averages, param, psych_fun, x, log)
 
-  if (!is.null(prob)) thresholds <- TRUE
+  x_seq <- x_seq(limits, x)
 
-  if (is.logical(guess) && !guess) guess <- 0
-  if (is.logical(lapses) && !lapses) lapses <- 0
+  curves <- ypred(x_seq, param, psych_fun, x, log)
+
+  if (thresholds) {
+    thresholds <- thresholds(param, curves, psych_fun, prob, log, guess, lapses)
+  }
+
+  sse <-  sse(averages, ypred)
+
+  logliks <- logliks(nll_fun, param)
+
+  loglikssaturated <- logliks_saturated(nll_fun_saturated, averages)
+
+  aic <- akaike(logliks, param)
+
+  deviance <- devi(logliks, loglikssaturated)
+
+#
+#   if (bootstrap == "parametric" || bootstrap == "nonparametric") {
+#     #avbootstrap <-  avbootstrap(averages, ypred, bootstrap, B)
+#     #parbootstrap <- parbootstrap
+#     # qp <- c(qp, list(parbootstrap = parbootstrap(qp)))
+#     # parci <- parci(qp, ci)
+#     # qp$par <- full_join(qp$par, parci, by= c('parn',qp$groups))
+#     #
+#     #
+#     # qp <- c(qp, list(logliksboot = logliksboot(qp)))
+#     # qp <- c(qp, list(logliksbootsaturated = logliksbootsaturated(qp)))
+#     # qp <- c(qp, list(devianceboot = devianceboot(qp)))
+#     # deviancep <- deviancep(qp)
+#     # qp$deviance <- merge(qp$deviance, deviancep)
+#     #
+#     # qp <- c(qp, list(aic = aic(qp)))
+#
+#   }
+#   else if (bootstrap != "none") {
+#     stop("Bootstrap should be \"parametric\", \"nonparametric\" or \"none\".",
+#          call. = FALSE)
+#   }
 
 
-  qp_without_b <- quickpsy_without_bootstrap(d, x, k, n,
-                             groups,
-                             xmin, xmax,
-                             log,
-                             fun,
-                             funname,
-                             parini,
-                             guess, lapses,
-                             prob, thresholds)
 
+  # if (log) {
+  #   averages <- averages %>% mutate(!!quo_name(x) := exp(!!x))
+  #   curves$x <- exp(curves$x)
+  # }
 
-    if (bootstrap == "parametric" || bootstrap == "nonparametric") {
-      avbootstrap <-  avbootstrap(qp_without_b$averages,
-                                  qp_without_b$ypred, bootstrap, B)
+  qp <- list(averages = averages,
+             limits = limits,
+             psych_fun = psych_fun,
+             nll_fun = nll_fun,
+             nll_fun_saturated = nll_fun_saturated,
+             parini = parini,
+             par = param,
+             ypred = ypred,
+             x_seq = x_seq,
+             curves = curves,
+             thresholds = thresholds,
+             sse = sse,
+             logliks = logliks,
+             loglikssaturated = loglikssaturated,
+             deviance = deviance,
+             aic = aic)
+#                funname_df = funname_df,
+#                fun_df = fun_df,
+#                psyfunguesslapses_df =psyfunguesslapses_df,
+#                limits = limits,
+#                parini = parini)
+             # par = par,
+             # ypred = ypred,
+             # curves = curves,
+             # sse = sse,
+             # thresholds = thresholds,
+             # logliks = logliks,
+             # loglikssaturated = loglikssaturated,
+             # deviance = deviance)
 
-      qp_boot <- avbootstrap %>%
-        group_by(sample) %>%
-        nest() %>%
-        mutate(quickpsy = map(data,
-                              ~quickpsy_without_bootstrap(., x, k, n,
-                                                          groups,
-                                                          xmin, xmax,
-                                                          log,
-                                                          fun,
-                                                          funname,
-                                                          parini,
-                                                          guess, lapses,
-                                                          prob, thresholds)))
+  return(qp)
 
-      avbootstrap <-  qp_boot %>%
-        mutate(temp = map(quickpsy, "averages")) %>% unnest(temp)
+  # qp <- c(qp, list(pariniset = pariniset))
+  #
 
-      parbootstrap <-  qp_boot %>%
-        mutate(temp = map(quickpsy, "par")) %>% unnest(temp)
+  #
 
-      ypredbootstrap <-  qp_boot %>%
-        mutate(temp = map(quickpsy, "ypred")) %>% unnest(temp)
+  ##### llevar el tema de los log a fitpsy
+  #if (log) qp$averages[[x]] <- exp(qp$averages[[x]])
+  # if (log) {
+  #   name_x <- quo_name(x)
+  #   qp$averages <- qp$averages %>% mutate(!!name_x := log(!!x))
+  # }
 
-      curvesbootstrap <-  qp_boot %>%
-        mutate(temp = map(quickpsy, "curves")) %>% unnest(temp)
+  ### bootstrap
+ # if (bootstrap == "parametric" || bootstrap == "nonparametric") {
+   # a <- 0
+     #qp <- c(qp, list(avbootstrap = avbootstrap(qp, bootstrap, B)))
 
-      if (thresholds) {
-        thresholdsbootstrap <-  qp_boot %>%
-          mutate(temp = map(quickpsy, "thresholds")) %>% unnest(temp)
-      }
-
-      ssebootstrap <-  qp_boot %>%
-        mutate(temp = map(quickpsy, "sse")) %>% unnest(temp)
-
-      logliksbootstrap <-  qp_boot %>%
-        mutate(temp = map(quickpsy, "logliks")) %>% unnest(temp)
-
-      loglikssaturatedbootstrap <-  qp_boot %>%
-        mutate(temp = map(quickpsy, "loglikssaturated")) %>% unnest(temp)
-
-      aicbootstrap <-  qp_boot %>%
-        mutate(temp = map(quickpsy, "aic")) %>% unnest(temp)
-
-      deviancebootstrap <-  qp_boot %>%
-        mutate(temp = map(quickpsy, "deviance")) %>% unnest(temp)
-
-    #   #parbootstrap <- parbootstrap
-    #   # qp <- c(qp, list(parbootstrap = parbootstrap(qp)))
-    #   # parci <- parci(qp, ci)
-    #   # qp$par <- full_join(qp$par, parci, by= c('parn',qp$groups))
-    #   #
-    #   #
-    #   # qp <- c(qp, list(logliksboot = logliksboot(qp)))
-    #   # qp <- c(qp, list(logliksbootsaturated = logliksbootsaturated(qp)))
-    #   # qp <- c(qp, list(devianceboot = devianceboot(qp)))
-    #   # deviancep <- deviancep(qp)
-    #   # qp$deviance <- merge(qp$deviance, deviancep)
-    #   #
-    #   # qp <- c(qp, list(aic = aic(qp)))
+     #qp <- c(qp, list(parbootstrap = parbootstrap(qp)))
+    # parci <- parci(qp, ci)
+    # qp$par <- full_join(qp$par, parci, by= c('parn',qp$groups))
     #
-    }
-    else if (bootstrap != "none") {
-      stop("Bootstrap should be \"parametric\", \"nonparametric\" or \"none\".",
-           call. = FALSE)
-    }
+    #
+    # qp <- c(qp, list(logliksboot = logliksboot(qp)))
+    # qp <- c(qp, list(logliksbootsaturated = logliksbootsaturated(qp)))
+    # qp <- c(qp, list(devianceboot = devianceboot(qp)))
+    # deviancep <- deviancep(qp)
+    # qp$deviance <- merge(qp$deviance, deviancep)
+    #
+    # qp <- c(qp, list(aic = aic(qp)))
+    #
+    #
+    # if (!(
+    #   (length(qp$groups)==0) ||
+    #   (length(qp$groups)==1 && nrow(unique(qp$averages[qp$groups]))==1)
+    # )) {
+    #   qp <- c(qp, list(parcomparisons = parcomparisons(qp, ci)))
+    # }
+    #
+    # qp <- c(qp, list(curvesbootstrap = curvesbootstrap(qp, log = log)))
+    #
+    # if (thresholds) {
+    #   qp <- c(qp,
+    #           list(thresholdsbootstrap = thresholdsbootstrap(qp, prob, log)))
+    #   thresholdsci = thresholdsci(qp, ci)
+    #   qp$thresholds <- merge(qp$thresholds, thresholdsci)
+    #   if (!(
+    #     (length(qp$groups)==0) ||
+    #     (length(qp$groups)==1 && nrow(unique(qp$averages[qp$groups]))==1)
+    #   )) {
+    #     qp <- c(qp, list(thresholdcomparisons = thresholdcomparisons(qp, ci)))
+    #   }
+    # }
+  #}
+  # else if (bootstrap != 'none')
+  #   stop('Bootstrap should be \'parametric\', \'nonparametric\' or \'none\'.',
+  #        call. = FALSE)
 
-  qp <- list(avbootstrap = avbootstrap,
-             parbootstrap = parbootstrap,
-             ypredbootstrap = ypredbootstrap,
-             curvesbootstrap = curvesbootstrap,
-             thresholdsbootstrap = thresholdsbootstrap)
-
-  c(qp_without_b, qp)
 
   # class(qp) <- "quickpsy"
   # qp

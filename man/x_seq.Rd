@@ -4,7 +4,7 @@
 \alias{x_seq}
 \title{Creates sequences of x's}
 \usage{
-x_seq(limits)
+x_seq(limits, x)
 }
 \description{
 Creates sequences of x's

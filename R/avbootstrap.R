@@ -10,13 +10,20 @@
 #'
 avbootstrap <- function(averages, ypred, bootstrap, B) {
 
-  one_avbootstrap <- function(averages, ypred,bootstrap, B) {
-    print(averages)
-    print(ypred)
+  one_avbootstrap <- function(averages, ypred, bootstrap, B) {
+
+    averages_for_boot <- averages
+
+    if (bootstrap == "parametric") averages_for_boot$prob <- ypred$y
+
+    tibble(sample = 1:B) %>%
+      crossing(averages_for_boot) %>%
+      group_by(sample) %>%
+      mutate(k = rbinom(n(), size = n, prob = prob)) %>%
+      select(-prob)
   }
 
-  apply_to_two_elements(averages, ypred, one_avbootstrap,
-                        bootstrap, B)
+  apply_to_two_elements(averages, ypred, one_avbootstrap, bootstrap, B)
 }
 
 
