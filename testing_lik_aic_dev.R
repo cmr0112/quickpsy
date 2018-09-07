@@ -112,7 +112,8 @@ pini <- c(1, 1)
 
 fit <- quickpsy(dat, x, k, n,
                 grouping = .(participant, size),
-                prob = .7)
+                prob = .7,
+                bootstrap = "k")
 
 fit$nll_fun$nll_fun[[1]](c(1,1))
 

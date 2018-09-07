@@ -123,7 +123,7 @@ A list containing the following components:
   \item \code{logliks} Log-likelihoods of the model.
   \item \code{loglikssaturated} Log-likelihoods of the saturated model.
   \item \code{deviance} Deviance of the model and the p-value calculated by
-   bootstraping.
+   using the chi-square distribution and bootstraping.
   \item \code{aic} AIC of the model defined as \deqn{ - 2 * loglik + 2  *k}
   where k is the number of parameters of the model.
 }

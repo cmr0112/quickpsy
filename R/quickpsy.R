@@ -210,7 +210,7 @@ quickpsy <- function(d, x = x, k = k, n = n,
 
   ypred <- ypred(averages, param, psych_fun, x, log)
 
-  x_seq <- x_seq(limits)
+  x_seq <- x_seq(limits, x)
 
   curves <- ypred(x_seq, param, psych_fun, x, log)
 
@@ -227,6 +227,31 @@ quickpsy <- function(d, x = x, k = k, n = n,
   aic <- akaike(logliks, param)
 
   deviance <- devi(logliks, loglikssaturated)
+
+
+  if (bootstrap == "parametric" || bootstrap == "nonparametric") {
+    #avbootstrap <-  avbootstrap(averages, ypred, bootstrap, B)
+    #qp <- c(qp, list(avbootstrap = avbootstrap(qp, bootstrap, B)))
+    # qp <- c(qp, list(parbootstrap = parbootstrap(qp)))
+    # parci <- parci(qp, ci)
+    # qp$par <- full_join(qp$par, parci, by= c('parn',qp$groups))
+    #
+    #
+    # qp <- c(qp, list(logliksboot = logliksboot(qp)))
+    # qp <- c(qp, list(logliksbootsaturated = logliksbootsaturated(qp)))
+    # qp <- c(qp, list(devianceboot = devianceboot(qp)))
+    # deviancep <- deviancep(qp)
+    # qp$deviance <- merge(qp$deviance, deviancep)
+    #
+    # qp <- c(qp, list(aic = aic(qp)))
+
+  }
+  else if (bootstrap != "none") {
+    stop("Bootstrap should be \"parametric\", \"nonparametric\" or \"none\".",
+         call. = FALSE)
+  }
+
+
 
   if (log) {
     averages <- averages %>% mutate(!!quo_name(x) := exp(!!x))

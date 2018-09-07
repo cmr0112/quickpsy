@@ -13,7 +13,9 @@
 ypred <- function(averages, param, psych_fun, x, log) {
   one_ypred <- function(averages, param, psych_fun, x, log) {
     x <- averages %>% select(!!x) %>% pull()
+
     y <- psych_fun$fun[[1]](x, param$par)
+    print(tibble(x, y))
     tibble(x, y)
   }
 
