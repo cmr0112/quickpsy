@@ -175,7 +175,7 @@ quickpsy <- function(d, x = x, k = k, n = n,
   if (is.logical(lapses) && !lapses) lapses <- 0
 
 
-  qp_without_b <- quickpsy_without_bootstrap(d, x, k, n,
+  qp <- quickpsy_without_bootstrap(d, x, k, n,
                              groups,
                              xmin, xmax,
                              log,
@@ -187,8 +187,8 @@ quickpsy <- function(d, x = x, k = k, n = n,
 
 
     if (bootstrap == "parametric" || bootstrap == "nonparametric") {
-      avbootstrap <-  avbootstrap(qp_without_b$averages,
-                                  qp_without_b$ypred, bootstrap, B)
+      avbootstrap <-  avbootstrap(qp$averages,
+                                  qp$ypred, bootstrap, B)
 
       qp_boot <- avbootstrap %>%
         group_by(sample) %>%
@@ -204,6 +204,7 @@ quickpsy <- function(d, x = x, k = k, n = n,
                                                           guess, lapses,
                                                           prob, thresholds)))
 
+
       avbootstrap <-  qp_boot %>%
         mutate(temp = map(quickpsy, "averages")) %>% unnest(temp)
 
@@ -218,51 +219,53 @@ quickpsy <- function(d, x = x, k = k, n = n,
 
       if (thresholds) {
         thresholdsbootstrap <-  qp_boot %>%
-          mutate(temp = map(quickpsy, "thresholds")) %>% unnest(temp)
+          mutate(temp = map(quickpsy, "thresholds")) %>%
+          unnest(temp, .drop = TRUE)
+
+        qp$thresholds <- thresholdsci(qp$thresholds, thresholdsbootstrap, ci)
       }
 
       ssebootstrap <-  qp_boot %>%
-        mutate(temp = map(quickpsy, "sse")) %>% unnest(temp)
+        mutate(temp = map(quickpsy, "sse")) %>%
+        unnest(temp, .drop = TRUE)
 
       logliksbootstrap <-  qp_boot %>%
-        mutate(temp = map(quickpsy, "logliks")) %>% unnest(temp)
+        mutate(temp = map(quickpsy, "logliks")) %>%
+        unnest(temp, .drop = TRUE)
 
       loglikssaturatedbootstrap <-  qp_boot %>%
-        mutate(temp = map(quickpsy, "loglikssaturated")) %>% unnest(temp)
+        mutate(temp = map(quickpsy, "loglikssaturated")) %>%
+        unnest(temp, .drop = TRUE)
 
       aicbootstrap <-  qp_boot %>%
-        mutate(temp = map(quickpsy, "aic")) %>% unnest(temp)
+        mutate(temp = map(quickpsy, "aic")) %>%
+        unnest(temp, .drop = TRUE)
 
       deviancebootstrap <-  qp_boot %>%
-        mutate(temp = map(quickpsy, "deviance")) %>% unnest(temp)
+        mutate(temp = map(quickpsy, "deviance")) %>%
+        unnest(temp, .drop = TRUE)
 
-    #   #parbootstrap <- parbootstrap
-    #   # qp <- c(qp, list(parbootstrap = parbootstrap(qp)))
-    #   # parci <- parci(qp, ci)
-    #   # qp$par <- full_join(qp$par, parci, by= c('parn',qp$groups))
-    #   #
-    #   #
-    #   # qp <- c(qp, list(logliksboot = logliksboot(qp)))
-    #   # qp <- c(qp, list(logliksbootsaturated = logliksbootsaturated(qp)))
-    #   # qp <- c(qp, list(devianceboot = devianceboot(qp)))
-    #   # deviancep <- deviancep(qp)
-    #   # qp$deviance <- merge(qp$deviance, deviancep)
-    #   #
-    #   # qp <- c(qp, list(aic = aic(qp)))
-    #
+      qp$par <- parci(qp$par, parbootstrap, ci)
+
+      qp <- c(qp,
+              list(avbootstrap = avbootstrap,
+                 parbootstrap = parbootstrap,
+                 ypredbootstrap = ypredbootstrap,
+                 curvesbootstrap = curvesbootstrap,
+                 thresholdsbootstrap = thresholdsbootstrap,
+                 ssebootstrap = ssebootstrap,
+                 logliksbootstrap = logliksbootstrap,
+                 loglikssaturatedbootstrap = loglikssaturatedbootstrap,
+                 aicbootstrap = aicbootstrap,
+                 deviancebootstrap = deviancebootstrap))
+
     }
     else if (bootstrap != "none") {
       stop("Bootstrap should be \"parametric\", \"nonparametric\" or \"none\".",
            call. = FALSE)
     }
 
-  qp <- list(avbootstrap = avbootstrap,
-             parbootstrap = parbootstrap,
-             ypredbootstrap = ypredbootstrap,
-             curvesbootstrap = curvesbootstrap,
-             thresholdsbootstrap = thresholdsbootstrap)
-
-  c(qp_without_b, qp)
+  qp
 
   # class(qp) <- "quickpsy"
   # qp

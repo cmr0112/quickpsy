@@ -36,7 +36,10 @@ ggplot(dat1) +
   geom_line(data = fit1$curves, aes(x = x, y = y)) +
   geom_segment(data = fit1$thresholds, aes(x = thre, y = 0,
                                           xend = thre,
-                                          yend = prob))
+                                          yend = prob)) +
+  geom_segment(data = fit1$thresholds, aes(x = threinf, y = prob,
+                                           xend = thresup,
+                                           yend = prob))
 
 
 ### fit same slope
