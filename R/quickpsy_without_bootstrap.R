@@ -178,6 +178,8 @@ quickpsy_without_bootstrap <- function(d, x, k, n,
 
   param <- param(nll_fun, parini)
 
+  param_dif <- param_dif(param)
+
   ypred <- ypred(averages, param, psych_fun, x, log)
 
   x_seq <- x_seq(limits, x)
@@ -186,6 +188,9 @@ quickpsy_without_bootstrap <- function(d, x, k, n,
 
   if (thresholds) {
     thresholds <- thresholds(param, curves, psych_fun, prob, log, guess, lapses)
+
+    # poner condition para ejecutar las comparisons
+    thresholds_dif <- thresholds_dif(thresholds)
   }
 
   sse <-  sse(averages, ypred)
@@ -197,6 +202,8 @@ quickpsy_without_bootstrap <- function(d, x, k, n,
   aic <- akaike(logliks, param)
 
   deviance <- devi(logliks, loglikssaturated)
+
+
 
 #
 #   if (bootstrap == "parametric" || bootstrap == "nonparametric") {
@@ -235,6 +242,7 @@ quickpsy_without_bootstrap <- function(d, x, k, n,
              nll_fun_saturated = nll_fun_saturated,
              parini = parini,
              par = param,
+             par_dif = param_dif,
              ypred = ypred,
              x_seq = x_seq,
              curves = curves,
@@ -242,8 +250,9 @@ quickpsy_without_bootstrap <- function(d, x, k, n,
              sse = sse,
              logliks = logliks,
              loglikssaturated = loglikssaturated,
+             aic = aic,
              deviance = deviance,
-             aic = aic)
+             thresholds_dif = thresholds_dif)
 #                funname_df = funname_df,
 #                fun_df = fun_df,
 #                psyfunguesslapses_df =psyfunguesslapses_df,

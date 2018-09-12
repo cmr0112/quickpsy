@@ -9,7 +9,5 @@ thresholdsci <- function(thresholds, thresholdsbootstrap, ci) {
               thresup = quantile(thre, 1 - .5*(1 - .95)))
 
   thresholds %>% left_join(ci, by = group_vars(thresholds))
-
-
 }
 

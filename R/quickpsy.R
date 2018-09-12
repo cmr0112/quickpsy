@@ -223,6 +223,15 @@ quickpsy <- function(d, x = x, k = k, n = n,
           unnest(temp, .drop = TRUE)
 
         qp$thresholds <- thresholdsci(qp$thresholds, thresholdsbootstrap, ci)
+
+        thresholds_difbootstrap <-  qp_boot %>%
+          mutate(temp = map(quickpsy, "thresholds_dif")) %>%
+          unnest(temp, .drop = TRUE)
+
+        # poner condition para ejecutar las comparisons
+        thresholdcomparisons <- thresholdcomparisons(qp$thresholds_dif,
+                                                     thresholds_difbootstrap,
+                                                     ci)
       }
 
       ssebootstrap <-  qp_boot %>%
@@ -245,6 +254,8 @@ quickpsy <- function(d, x = x, k = k, n = n,
         mutate(temp = map(quickpsy, "deviance")) %>%
         unnest(temp, .drop = TRUE)
 
+
+
       qp$par <- parci(qp$par, parbootstrap, ci)
 
       qp <- c(qp,
@@ -257,7 +268,9 @@ quickpsy <- function(d, x = x, k = k, n = n,
                  logliksbootstrap = logliksbootstrap,
                  loglikssaturatedbootstrap = loglikssaturatedbootstrap,
                  aicbootstrap = aicbootstrap,
-                 deviancebootstrap = deviancebootstrap))
+                 deviancebootstrap = deviancebootstrap,
+                 thresholds_difbootstrap = thresholds_difbootstrap,
+                 thresholdcomparisons = thresholdcomparisons))
 
     }
     else if (bootstrap != "none") {

@@ -9,8 +9,8 @@ slopes <- c(.3, .6, .9)
 dat <- crossing(participant = 1:3, size = c("large", "small")) %>%
   bind_cols(pse = c(.5, 0.7, 1, 1.5, 1.4, 1.6),
             slope = c(.2, .4, .4, .8, .6, .3)) %>%
-  crossing(x = seq(0, 2, .2)) %>%
-  mutate(p = pnorm(x, pse, slope)) %>%
+  crossing(xx = seq(0, 2, .2)) %>%
+  mutate(p = pnorm(xx, pse, slope)) %>%
   rowwise() %>%
   mutate(n = 50,
          k = rbinom(1, n, p),
@@ -27,12 +27,12 @@ pini <- list(c(.2, .3), c(.1, .6))
 pini <- tibble(parn = c("p1", "p2"), par = c(1, 1))
 pini <- tibble(parn = c("p1", "p2"), parmin = c(.2, .1), parmax = c(.3, .6))
 
-fit1 <- quickpsy(dat1, x, k, n)
+system.time(fit1 <- quickpsy(dat1, xx, k, n))
 
 fit1$nll_fun$nll_fun[[1]](c(1, 1))
 
 ggplot(dat1) +
-  geom_point(aes(x = x, y = prob)) +
+  geom_point(aes(x = xx, y = prob)) +
   geom_line(data = fit1$curves, aes(x = x, y = y)) +
   geom_segment(data = fit1$thresholds, aes(x = thre, y = 0,
                                           xend = thre,
@@ -63,16 +63,16 @@ pini <- crossing(participant = 1:3,
 #pini <- c(1, 1, 1)
 pini <- list(c(0, 2), c(0, 2), c(0, 2))
 
-fit <- quickpsy(dat, x, k, n,
+fit <- quickpsy(dat, xx, k, n,
                 grouping = .(participant, size),
                 parini = pini,
-                fun = fun_df)
+                fun = fun_df, B = 5)
 
 fit$nll_fun$nll_fun[[1]](c(1,1,1))
 
 ggplot(dat) +
   facet_grid(.~participant) +
-  geom_point(aes(x = x, y = prob, color = size)) +
+  geom_point(aes(x = xx, y = prob, color = size)) +
   geom_line(data = fit$curves, aes(x = x, y = y, color = size)) +
   geom_segment(data = fit$thresholds, aes(x = thre, y = 0,
                                            xend = thre,
@@ -149,23 +149,18 @@ ggplot(dat) +
 
 
 ### fit dif pse dif slope: single function
-pini <- c(1, 1)
-
-fit <- quickpsy(dat, x, k, n,
+system.time(fit <- quickpsy(dat, xx, k, n,
                 grouping = .(participant, size),
-                prob = .7)
+                prob = .6, B = 30))
 
-fit$nll_fun$nll_fun[[1]](c(1,1))
 
-ggplot(dat) +
+ggplot() +
   facet_grid(.~participant) +
-  geom_point(aes(x = x, y = prob, color = size)) +
+  geom_point(data = fit$averages, aes(x = xx, y = prob, color = size)) +
   geom_line(data = fit$curves, aes(x = x, y = y, color = size)) +
   geom_segment(data = fit$thresholds,
                aes(x = thre, xend = thre, y = 0, yend = prob,
                    color = size))
-
-
 
 
 
