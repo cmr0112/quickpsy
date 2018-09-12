@@ -154,7 +154,7 @@ system.time(fit <- quickpsy(dat, xx, k, n,
                 prob = .6, B = 30))
 
 
-ggplot() +
+vomggplot() +
   facet_grid(.~participant) +
   geom_point(data = fit$averages, aes(x = xx, y = prob, color = size)) +
   geom_line(data = fit$curves, aes(x = x, y = y, color = size)) +

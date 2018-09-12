@@ -211,6 +211,15 @@ quickpsy <- function(d, x = x, k = k, n = n,
       parbootstrap <-  qp_boot %>%
         mutate(temp = map(quickpsy, "par")) %>% unnest(temp)
 
+      # poner condition para ejecutar las comparisons
+      par_difbootstrap <-  qp_boot %>%
+        mutate(temp = map(quickpsy, "par_dif")) %>%
+        unnest(temp, .drop = TRUE)
+
+      parcomparisons <- parcomparisons(qp$par_dif,
+                                       par_difbootstrap,
+                                       ci)
+
       ypredbootstrap <-  qp_boot %>%
         mutate(temp = map(quickpsy, "ypred")) %>% unnest(temp)
 
@@ -224,6 +233,7 @@ quickpsy <- function(d, x = x, k = k, n = n,
 
         qp$thresholds <- thresholdsci(qp$thresholds, thresholdsbootstrap, ci)
 
+        # poner condition para ejecutar las comparisons
         thresholds_difbootstrap <-  qp_boot %>%
           mutate(temp = map(quickpsy, "thresholds_dif")) %>%
           unnest(temp, .drop = TRUE)
@@ -261,6 +271,8 @@ quickpsy <- function(d, x = x, k = k, n = n,
       qp <- c(qp,
               list(avbootstrap = avbootstrap,
                  parbootstrap = parbootstrap,
+                 par_difbootstrap = par_difbootstrap,
+                 parcomparisons = parcomparisons,
                  ypredbootstrap = ypredbootstrap,
                  curvesbootstrap = curvesbootstrap,
                  thresholdsbootstrap = thresholdsbootstrap,
