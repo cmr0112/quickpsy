@@ -2,7 +2,7 @@
 #' @export param_dif
 param_dif <- function(param) {
 
-
+print(param)
   combinations <- as_tibble(t(combn(nrow(param %>% filter(parn == "p1")), 2)))
 
   create_df <- function(df) {

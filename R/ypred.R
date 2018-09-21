@@ -12,8 +12,7 @@
 #' @export ypred
 ypred <- function(averages, param, psych_fun, x, log) {
   one_ypred <- function(averages, param, psych_fun, x, log) {
-    x <- averages %>% select(!!x) %>% pull()
-
+    x <- averages[[quo_name(x)]] #%>% select(!!x) %>% pull()
     y <- psych_fun$fun[[1]](x, param$par)
     tibble(x, y)
   }

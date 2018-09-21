@@ -7,9 +7,6 @@
 \usage{
 logliks(nll_fun, param)
 }
-\arguments{
-\item{qp}{output from quickpsy}
-}
 \description{
 Calculates the loglikelihoods
 \code{logliks} calculates the loglikelihoods.

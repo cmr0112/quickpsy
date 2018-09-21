@@ -22,7 +22,6 @@ create_nll <- function(averages, psych_fun, x) {
   eps <- .Machine$double.eps
 
   function(p) {
-   # calculate_nll <- function(averages, psych_fun) {
       #x <- averages %>% select(!!x) %>% pull()
       x <- averages[[quo_name(x)]]
 
@@ -41,11 +40,6 @@ create_nll <- function(averages, psych_fun, x) {
 
     }
 
-    # nlls %>%
-    #   mutate(nll = map2_dbl(data, fun, calculate_nll)) %>%
-    #   summarise(nll = sum(nll))
-
- # }
 }
 
 
