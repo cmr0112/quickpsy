@@ -4,6 +4,19 @@
 #' @export create_nll
 #'
 create_nll <- function(averages, psych_fun, x) {
+  if (group_vars(psych_fun) == "dummy_group") {
+    nlls <- averages %>%
+      nest() %>%
+      bind_cols(psych_fun)
+
+  }
+  else {
+    nlls <- averages %>%
+      group_by(!!!groups(psych_fun)) %>%
+      nest() %>%
+      left_join(psych_fun, by = group_vars(psych_fun))
+  }
+
   function(p) {
     calculate_nll <- function(averages, psych_fun) {
       x <- averages %>% select(!!x) %>% pull()
@@ -15,20 +28,6 @@ create_nll <- function(averages, psych_fun, x) {
 
       -sum(lchoose(averages$n, averages$k) + # includes the binomial coef
              averages$k * log(phi) + (averages$n - averages$k) * log(1 - phi))
-    }
-
-    if (group_vars(psych_fun) == "dummy_group") {
-      nlls <- averages %>%
-        nest() %>%
-        bind_cols(psych_fun)
-       #mutate(fun = psych_fun$psych_fun)
-
-    }
-    else {
-      nlls <- averages %>%
-        group_by(!!!groups(psych_fun)) %>%
-        nest() %>%
-        left_join(psych_fun, by = group_vars(psych_fun))
     }
 
     nlls %>%
