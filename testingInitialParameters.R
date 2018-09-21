@@ -27,7 +27,7 @@ pini <- list(c(.2, .3), c(.1, .6))
 pini <- tibble(parn = c("p1", "p2"), par = c(1, 1))
 pini <- tibble(parn = c("p1", "p2"), parmin = c(.2, .1), parmax = c(.3, .6))
 
-system.time(fit1 <- quickpsy(dat1, xx, k, n))
+system.time(fit1 <- quickpsy(dat1, xx, k, n, bootstrap = "none"))
 
 fit1$nll_fun$nll_fun[[1]](c(1, 1))
 

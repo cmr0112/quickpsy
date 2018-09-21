@@ -7,7 +7,7 @@
 difference in the thresholds for two groups for all possible pairs
 of groups}
 \usage{
-thresholdcomparisons(thresholds_dif, thresholds_difbootstrap)
+thresholdcomparisons(thresholds_dif, thresholds_difbootstrap, ci)
 }
 \description{
 Pair comparisons of the thresholds using bootstrap

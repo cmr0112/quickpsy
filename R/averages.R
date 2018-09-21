@@ -13,7 +13,9 @@ averages <- function(d, x, k, n, groups, log) {
       summarise(n = n(), k = sum(k))
   }
   else {
-    averages <- d %>% rename(k = !!k, n = !!n)
+    averages <- d %>%
+      group_by(!!!syms(groups_x)) %>%
+      transmute(k = !!k, n = !!n)
   }
 
   if (!is.null(groups)) averages <- averages %>% group_by(!!!groups)

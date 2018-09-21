@@ -161,7 +161,6 @@ quickpsy <- function(d, x = x, k = k, n = n,
     groups <- syms("dummy_group")
   }
 
-  #if (is.function(fun)) funname <- quo_name(enquo(fun))
   if (is.function(fun)) funname <- deparse(substitute(fun))
   else funname <- "no_default"
 
@@ -190,11 +189,13 @@ quickpsy <- function(d, x = x, k = k, n = n,
       avbootstrap <-  avbootstrap(qp$averages,
                                   qp$ypred, bootstrap, B)
 
+
+
       qp_boot <- avbootstrap %>%
         group_by(sample) %>%
         nest() %>%
         mutate(quickpsy = map(data,
-                              ~quickpsy_without_bootstrap(., x, k, n,
+                              ~quickpsy_without_bootstrap(., x, quo(k), quo(n),
                                                           groups,
                                                           xmin, xmax,
                                                           log,
@@ -205,44 +206,21 @@ quickpsy <- function(d, x = x, k = k, n = n,
                                                           prob, thresholds)))
 
 
+
+
       avbootstrap <-  qp_boot %>%
         mutate(temp = map(quickpsy, "averages")) %>% unnest(temp)
 
       parbootstrap <-  qp_boot %>%
         mutate(temp = map(quickpsy, "par")) %>% unnest(temp)
 
-      # poner condition para ejecutar las comparisons
-      par_difbootstrap <-  qp_boot %>%
-        mutate(temp = map(quickpsy, "par_dif")) %>%
-        unnest(temp, .drop = TRUE)
-
-      parcomparisons <- parcomparisons(qp$par_dif,
-                                       par_difbootstrap,
-                                       ci)
+      parci <- parci(qp$par, parbootstrap, ci)
 
       ypredbootstrap <-  qp_boot %>%
         mutate(temp = map(quickpsy, "ypred")) %>% unnest(temp)
 
       curvesbootstrap <-  qp_boot %>%
         mutate(temp = map(quickpsy, "curves")) %>% unnest(temp)
-
-      if (thresholds) {
-        thresholdsbootstrap <-  qp_boot %>%
-          mutate(temp = map(quickpsy, "thresholds")) %>%
-          unnest(temp, .drop = TRUE)
-
-        qp$thresholds <- thresholdsci(qp$thresholds, thresholdsbootstrap, ci)
-
-        # poner condition para ejecutar las comparisons
-        thresholds_difbootstrap <-  qp_boot %>%
-          mutate(temp = map(quickpsy, "thresholds_dif")) %>%
-          unnest(temp, .drop = TRUE)
-
-        # poner condition para ejecutar las comparisons
-        thresholdcomparisons <- thresholdcomparisons(qp$thresholds_dif,
-                                                     thresholds_difbootstrap,
-                                                     ci)
-      }
 
       ssebootstrap <-  qp_boot %>%
         mutate(temp = map(quickpsy, "sse")) %>%
@@ -264,26 +242,57 @@ quickpsy <- function(d, x = x, k = k, n = n,
         mutate(temp = map(quickpsy, "deviance")) %>%
         unnest(temp, .drop = TRUE)
 
-
-
-      qp$par <- parci(qp$par, parbootstrap, ci)
-
       qp <- c(qp,
               list(avbootstrap = avbootstrap,
-                 parbootstrap = parbootstrap,
-                 par_difbootstrap = par_difbootstrap,
-                 parcomparisons = parcomparisons,
-                 ypredbootstrap = ypredbootstrap,
-                 curvesbootstrap = curvesbootstrap,
-                 thresholdsbootstrap = thresholdsbootstrap,
-                 ssebootstrap = ssebootstrap,
-                 logliksbootstrap = logliksbootstrap,
-                 loglikssaturatedbootstrap = loglikssaturatedbootstrap,
-                 aicbootstrap = aicbootstrap,
-                 deviancebootstrap = deviancebootstrap,
-                 thresholds_difbootstrap = thresholds_difbootstrap,
-                 thresholdcomparisons = thresholdcomparisons))
+                   parbootstrap = parbootstrap,
+                   par = parci,
+                   ypredbootstrap = ypredbootstrap,
+                   curvesbootstrap = curvesbootstrap,
+                   ssebootstrap = ssebootstrap,
+                   logliksbootstrap = logliksbootstrap,
+                   loglikssaturatedbootstrap = loglikssaturatedbootstrap,
+                   aicbootstrap = aicbootstrap,
+                   deviancebootstrap = deviancebootstrap))
 
+      if (thresholds) {
+        thresholdsbootstrap <-  qp_boot %>%
+          mutate(temp = map(quickpsy, "thresholds")) %>%
+          unnest(temp, .drop = TRUE)
+
+        thresholdsci <- thresholdsci(qp$thresholds, thresholdsbootstrap, ci)
+
+        qp <- c(qp,
+                list(thresholdsbootstrap = thresholdsbootstrap,
+                     thresholds = thresholdsci))
+
+        if ("thresholds_dif" %in% names(qp)) {
+          thresholds_difbootstrap <-  qp_boot %>%
+            mutate(temp = map(quickpsy, "thresholds_dif")) %>%
+            unnest(temp, .drop = TRUE)
+
+          thresholdcomparisons <- thresholdcomparisons(qp$thresholds_dif,
+                                                       thresholds_difbootstrap,
+                                                       ci)
+          qp <- c(qp,
+                  list(thresholds_difbootstrap = thresholds_difbootstrap,
+                       thresholdcomparisons = thresholdcomparisons))
+        }
+      }
+
+
+      if ("par_dif" %in% names(qp)) {
+        par_difbootstrap <-  qp_boot %>%
+          mutate(temp = map(quickpsy, "par_dif")) %>%
+          unnest(temp, .drop = TRUE)
+
+        parcomparisons <- parcomparisons(qp$par_dif,
+                                         par_difbootstrap,
+                                         ci)
+
+        qp <- c(qp,
+                list(par_difbootstrap = par_difbootstrap,
+                     parcomparisons = parcomparisons))
+      }
     }
     else if (bootstrap != "none") {
       stop("Bootstrap should be \"parametric\", \"nonparametric\" or \"none\".",

@@ -159,15 +159,14 @@ ggplot(dat) +
 ### fit dif pse dif slope: single function
 pini <- c(1, 1)
 
-fit <- quickpsy(dat, xx, k, n,
-                grouping = .(participant, size),
-                prob = .7, B = 2)
+system.time(fit <- quickpsy(dat, xx, k, n,
+                grouping = .(participant, size), bootstrap = "none"))
 
 fit$nll_fun$nll_fun[[1]](c(1,1))
 
 ggplot(dat) +
   facet_grid(.~participant) +
-  geom_point(aes(x = x, y = prob, color = size)) +
+  geom_point(aes(x = xx, y = prob, color = size)) +
   geom_line(data = fit$curves, aes(x = x, y = y, color = size)) +
   geom_segment(data = fit$thresholds,
                aes(x = thre, xend = thre, y = 0, yend = prob,
