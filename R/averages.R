@@ -18,6 +18,8 @@ averages <- function(d, x, k, n, groups, log) {
       transmute(k = !!k, n = !!n)
   }
 
+
+
   if (!is.null(groups)) averages <- averages %>% group_by(!!!groups)
 
   averages <- averages %>% mutate(prob = k / n)

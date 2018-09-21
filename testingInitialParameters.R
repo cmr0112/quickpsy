@@ -66,7 +66,8 @@ pini <- list(c(0, 2), c(0, 2), c(0, 2))
 fit <- quickpsy(dat, xx, k, n,
                 grouping = .(participant, size),
                 parini = pini,
-                fun = fun_df, B = 5)
+                fun = fun_df,
+                bootstrap = "none")
 
 fit$nll_fun$nll_fun[[1]](c(1,1,1))
 

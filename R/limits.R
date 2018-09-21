@@ -6,6 +6,7 @@ limits <- function(averages, x, xmin, xmax) {
   one_limit <- function(averages, x, xmin, xmax) {
     if (is.null(xmin)) xmin <- averages %>% select(!!x) %>% pull() %>% min()
     if (is.null(xmax)) xmax <- averages %>% select(!!x) %>% pull() %>% max()
+
     tibble(xmin, xmax)
   }
 
@@ -15,5 +16,7 @@ limits <- function(averages, x, xmin, xmax) {
     select(-averages) %>%
     unnest(limits) %>%
     group_by(!!!(groups(averages)))
+
+
 }
 
