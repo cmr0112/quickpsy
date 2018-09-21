@@ -144,6 +144,8 @@ quickpsy <- function(d, x = x, k = k, n = n,
 
   ### Working with the arguments
 
+  print("x")
+
   x <- enquo(x)
 
   k <- enquo(k)
