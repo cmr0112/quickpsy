@@ -47,14 +47,12 @@ quickpsy_without_bootstrap <- function(d, x, k, n,
   sse <-  sse(averages, ypred)
 
   logliks <- logliks(nll_fun, param)
-  #
-  # loglikssaturated <- logliks_saturated(nll_fun_saturated, averages)
-  #
-  # aic <- akaike(logliks, param)
-  #
-  # deviance <- devi(logliks, loglikssaturated)
 
+  loglikssaturated <- logliks_saturated(nll_fun_saturated, averages)
 
+  aic <- akaike(logliks, param)
+
+  deviance <- devi(logliks, loglikssaturated)
 
   qp <- list(averages = averages,
              limits = limits,
@@ -67,26 +65,26 @@ quickpsy_without_bootstrap <- function(d, x, k, n,
              x_seq = x_seq,
              curves = curves,
              sse = sse,
-             logliks = logliks)
-             # loglikssaturated = loglikssaturated,
-             # aic = aic,
-             # deviance = deviance)
+             logliks = logliks,
+             loglikssaturated = loglikssaturated,
+             aic = aic,
+             deviance = deviance)
 
 
-  # if (length(groups(averages)) != 1) {
-  #   param_dif <- param_dif(param)
-  #   qp <- c(qp, list(par_dif = param_dif))
-  # }
+  if (length(groups(averages)) != 1) {
+    param_dif <- param_dif(param)
+    qp <- c(qp, list(par_dif = param_dif))
+  }
 
-  # if (thresholds) {
-  #   thresholds <- thresholds(param, curves, psych_fun, prob, log, guess, lapses)
-  #   qp <- c(qp, list(thresholds = thresholds))
-  # }
-  #
-  # if (length(groups(averages)) != 1) {
-  #   thresholds_dif <- thresholds_dif(thresholds)
-  #   qp <- c(qp, list(thresholds_dif = thresholds_dif))
-  # }
+  if (thresholds) {
+    thresholds <- thresholds(param, curves, psych_fun, prob, log, guess, lapses)
+    qp <- c(qp, list(thresholds = thresholds))
+  }
+
+  if (length(groups(averages)) != 1) {
+    thresholds_dif <- thresholds_dif(thresholds)
+    qp <- c(qp, list(thresholds_dif = thresholds_dif))
+  }
 
   qp
 

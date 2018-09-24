@@ -205,9 +205,6 @@ quickpsy <- function(d, x = x, k = k, n = n,
                                                           guess, lapses,
                                                           prob, thresholds)))
 
-
-
-
       avbootstrap <-  qp_boot %>%
         mutate(temp = map(quickpsy, "averages")) %>% unnest(temp)
 
@@ -242,10 +239,10 @@ quickpsy <- function(d, x = x, k = k, n = n,
         mutate(temp = map(quickpsy, "deviance")) %>%
         unnest(temp, .drop = TRUE)
 
+      qp$par <- parci
       qp <- c(qp,
               list(avbootstrap = avbootstrap,
                    parbootstrap = parbootstrap,
-                   par = parci,
                    ypredbootstrap = ypredbootstrap,
                    curvesbootstrap = curvesbootstrap,
                    ssebootstrap = ssebootstrap,
@@ -261,9 +258,9 @@ quickpsy <- function(d, x = x, k = k, n = n,
 
         thresholdsci <- thresholdsci(qp$thresholds, thresholdsbootstrap, ci)
 
+        qp$thresholds <- thresholdsci
         qp <- c(qp,
-                list(thresholdsbootstrap = thresholdsbootstrap,
-                     thresholds = thresholdsci))
+                list(thresholdsbootstrap = thresholdsbootstrap))
 
         if ("thresholds_dif" %in% names(qp)) {
           thresholds_difbootstrap <-  qp_boot %>%
@@ -273,6 +270,7 @@ quickpsy <- function(d, x = x, k = k, n = n,
           thresholdcomparisons <- thresholdcomparisons(qp$thresholds_dif,
                                                        thresholds_difbootstrap,
                                                        ci)
+
           qp <- c(qp,
                   list(thresholds_difbootstrap = thresholds_difbootstrap,
                        thresholdcomparisons = thresholdcomparisons))

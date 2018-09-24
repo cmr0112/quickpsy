@@ -4,10 +4,8 @@
 logliks <- function(nll_fun, param) {
   one_loglik <- function(nll_fun, param) {
     nll <- nll_fun$nll_fun[[1]](param$par)
-    print("x")
-    print(nll)
-    nll %>%
-      transmute(loglik = -nll) %>%
+
+    tibble(loglik = -nll) %>%
       mutate(n_par = length(param$par))
   }
 

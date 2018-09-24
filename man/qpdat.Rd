@@ -4,7 +4,7 @@
 \name{qpdat}
 \alias{qpdat}
 \title{Data set for demonstration}
-\format{An object of class \code{grouped_df} (inherits from \code{tbl_df}, \code{tbl}, \code{data.frame}) with 6240 rows and 8 columns.}
+\format{An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 6240 rows and 8 columns.}
 \usage{
 qpdat
 }
