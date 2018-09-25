@@ -4,9 +4,10 @@
 calculate_parini <- function(averages, funname, x, guess, lapses) {
 
   one_calculate_parini <- function(averages, funname, x, guess, lapses) {
-    ntrials <- averages %>% select(n) %>% pull() %>% first()
-    x <-  averages %>% select(!!x) %>% pull()
-    y <- averages %>% select(prob) %>% pull()
+
+    ntrials <- averages$n %>% first()
+    x <-  averages[[quo_name(x)]]
+    y <- averages$prob
 
     if (is.numeric(guess) && is.numeric(lapses)) {
       gue <- guess
@@ -33,6 +34,7 @@ calculate_parini <- function(averages, funname, x, guess, lapses) {
     y01 <- (y - gue) / (1 - gue - lap)
     datp <- tibble(x = x, y01)
 
+
     ### Replacing 0s and/or 1s by 1 / (2 * n) and 1 - 1 / (2 * n)
     # where n is the number of trials
     datp <- datp %>%
@@ -42,19 +44,27 @@ calculate_parini <- function(averages, funname, x, guess, lapses) {
     ### Eliminating probabilities outside (0,1)
     dat <- datp %>% filter(y01 > 0, y01 <1)
 
-    ### Linear fit
-    dat <- dat %>% mutate(z = qnorm(y01))
 
-    coef <- lm(z~x, data = dat)$coefficients
-
-    if (coef[[2]] == 0) { # checking that the slope is not zero
-      p1 <- median(dat$x)
-      p2 <- (1 - gue - lap) / (max(dat$x)-min(dat$x))
+    if (length(dat$x) < 2) {
+      ### When it is not possible to do the linear fit
+      p1 <- median(datp$x)
+      p2 <- (1 - gue - lap) / (max(datp$x)-min(datp$x))
     }
     else {
-      p1 <- -coef[[1]] / coef[[2]]
-      p2 <- 1 / coef[[2]]
+      ### Linear fit
+      dat <- dat %>% mutate(z = qnorm(y01))
+      coef <- lm(z ~ x, data = dat)$coefficients
+
+      if (coef[[2]] == 0) { # checking that the slope is not zero
+        p1 <- median(dat$x)
+        p2 <- (1 - gue - lap) / (max(dat$x)-min(dat$x))
+      }
+      else {
+        p1 <- -coef[[1]] / coef[[2]]
+        p2 <- 1 / coef[[2]]
+      }
     }
+
 
     if (funname == 'logistic_fun') p2 <- 1 / p2
     if (funname  == 'weibull_fun') p2 <- 1 / p2
@@ -72,8 +82,10 @@ calculate_parini <- function(averages, funname, x, guess, lapses) {
       if (lapses) para <- c(p1, p2, lap)
       if (!lapses) para <- c(p1, p2)
     }
+
     tibble(parn = paste0('p', seq(1, length(para))), par = para)
   }
+
 
     averages %>%
       nest(everything(), .key = averages) %>%

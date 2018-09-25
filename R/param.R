@@ -25,31 +25,4 @@ param <- function(nll_fun, parini) {
 
   apply_to_two_elements(parini, nll_fun, calculate_par)
 
- # parini_df <- parini %>% nest(everything(), .key = "parini")
- #
- # nll_fun_df <- nll_fun %>% nest(everything(), .key = "nll_fun")
- #
- #
- # df <- parini_df %>%
- #   left_join(nll_fun_df, by = group_vars(parini))
-
- #print(df)
- #print(df$nll_fun[[1]]$nll_fun[[1]])
-
-
- # xx <- Vernier %>%
-  #  filter(WaveForm == "Sine", TempFreq == 2, Direction == "Upward")
-
-  #print(nll_fun_df$nll_fun[[1]]$nll_fun[[1]])
-
-  #for (i in 1:8) optim(c(1,1), nll_fun_df$nll_fun[[1]]$nll_fun[[1]])
-
-
-  # df %>%
-  #   mutate(temp = map2(parini, nll_fun, calculate_par)) %>%
-  #   select(-parini, -nll_fun) %>%
-  #   unnest(temp) %>%
-  #   group_by(UQS(groups(parini)))
-
-  #tibble(x = 5)
 }

@@ -13,12 +13,9 @@ quickpsy_without_bootstrap <- function(d, x, k, n,
 
 
   ### Calling functions
-
   averages <- averages(d, x, k, n, groups, log)
 
-
   limits <- limits(averages, x, xmin, xmax)
-
 
   psych_fun <- psych_fun(fun, guess, lapses)
 
@@ -37,6 +34,8 @@ quickpsy_without_bootstrap <- function(d, x, k, n,
   }
 
   param <- param(nll_fun, parini)
+
+
 
   ypred <- ypred(averages, param, psych_fun, x, log)
 
