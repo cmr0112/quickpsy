@@ -2,10 +2,10 @@
 #'@export print.quickpsy
 print.quickpsy <- function(x,...)
 {
-  print('Parameters')
+  cat("par\n")
   print(x$par)
-  if ('thresholds' %in% names(x)) {
-    print('Thresholds')
+  if ("thresholds" %in% names(x)) {
+    cat("thresholds\n")
     print(x$thresholds)
   }
 }

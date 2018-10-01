@@ -35,8 +35,6 @@ quickpsy_without_bootstrap <- function(d, x, k, n,
 
   param <- param(nll_fun, parini)
 
-
-
   ypred <- ypred(averages, param, psych_fun, x, log)
 
   x_seq <- x_seq(limits, x)
@@ -78,11 +76,11 @@ quickpsy_without_bootstrap <- function(d, x, k, n,
   if (thresholds) {
     thresholds <- thresholds(param, curves, psych_fun, prob, log, guess, lapses)
     qp <- c(qp, list(thresholds = thresholds))
-  }
 
-  if (length(groups(averages)) != 1) {
-    thresholds_dif <- thresholds_dif(thresholds)
-    qp <- c(qp, list(thresholds_dif = thresholds_dif))
+    if (length(groups(averages)) != 1) {
+      thresholds_dif <- thresholds_dif(thresholds)
+      qp <- c(qp, list(thresholds_dif = thresholds_dif))
+    }
   }
 
   qp

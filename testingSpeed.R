@@ -31,6 +31,19 @@ dat1 <- dat %>%
 
 system.time(fit1 <- quickpsy(dat1, xx, k, n, bootstrap = "none"))
 
+
+glm(cbind(k,n) ~ xx, data =dat1, family = binomial(probit)) %>% logLik()
+
+nll <- function(p) { # negative log likelihood
+  phi <- pnorm(fit1$averages$xx, p[1], p[2])
+  -sum(lchoose(fit1$averages$n, fit1$averages$k) +
+         fit1$averages$k * log(phi) + (fit1$averages$n - fit1$averages$k) * log(1 - phi) )
+}
+
+para <- optim(c(.7, .7), nll)$par
+
+nll(para)
+
 ggplot(dat) +
   facet_grid(.~participant) +
   geom_point(aes(x = xx, y = prob, color = size)) +

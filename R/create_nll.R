@@ -22,6 +22,8 @@ create_nll <- function(averages, psych_fun, x) {
   eps <- .Machine$double.eps
 
   function(p) {
+
+
       #x <- averages %>% select(!!x) %>% pull()
       x <- averages[[quo_name(x)]]
 

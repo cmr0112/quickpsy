@@ -297,10 +297,23 @@ quickpsy <- function(d, x = x, k = k, n = n,
            call. = FALSE)
     }
 
+  ## removing dummy group
+  qp <- qp %>%
+    map(
+      function(.x) {
+        if("dummy_group" %in% names(.x)) {
+          .x %>% ungroup() %>% select(-dummy_group)
+        }
+        else {
+          (.x)
+        }
+      }
+    )
+
   qp
 
-  # class(qp) <- "quickpsy"
-  # qp
+  class(qp) <- "quickpsy"
+  qp
 }
 
 #' Data set for demonstration

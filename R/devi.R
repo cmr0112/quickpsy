@@ -4,7 +4,7 @@
 #' @export
 devi <- function(logliks, loglikssaturated) {
   one_devi <- function(logliks, loglikssaturated) {
-    tibble(deviance = -2 * (logliks$loglik - loglikssaturated$loglik),
+    tibble(deviance = 2 * (loglikssaturated$loglik - logliks$loglik),
            df = loglikssaturated$n_par - logliks$n_par,
            p_value_chi_sqr = pchisq(deviance, df, lower.tail = FALSE))
   }
