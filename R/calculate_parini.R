@@ -65,9 +65,18 @@ calculate_parini <- function(averages, funname, x, guess, lapses) {
       }
     }
 
+    if (funname  == "cum_normal_fun") {
+      if (p2 < 0) p2 <- 1
+    }
+    if (funname == "logistic_fun") p2 <- 1 / p2
+    if (funname  == "weibull_fun") {
+      if (p1 < 0) p1 <- .Machine$double.eps
+      if (p2 < 0) p2 <- 1
+      p2 <- 1 / p2
+    }
 
-    if (funname == 'logistic_fun') p2 <- 1 / p2
-    if (funname  == 'weibull_fun') p2 <- 1 / p2
+
+
 
     if (is.numeric(guess) && is.numeric(lapses)) para <- c(p1, p2)
     if (is.logical(guess) && is.logical(lapses)) {

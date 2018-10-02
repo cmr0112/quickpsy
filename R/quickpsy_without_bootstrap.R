@@ -34,7 +34,7 @@ quickpsy_without_bootstrap <- function(d, x, k, n,
   }
 
   param <- param(nll_fun, parini)
-
+  print(param)
   ypred <- ypred(averages, param, psych_fun, x, log)
 
   x_seq <- x_seq(limits, x)

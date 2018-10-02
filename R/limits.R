@@ -12,12 +12,12 @@ limits <- function(averages, x, xmin, xmax) {
     tibble(xmin, xmax)
   }
 
-  averages %>%
-    nest(everything(), .key = averages) %>%
-   mutate(limits = map(averages, one_limit, x, xmin, xmax)) %>%
-    select(-averages) %>%
-    unnest(limits) %>%
-    group_by(!!!(groups(averages)))
+  averages #%>%
+    # nest(everything(), .key = averages) %>%
+    # mutate(limits = map(averages, one_limit, x, xmin, xmax)) %>%
+    # select(-averages) %>%
+    # unnest(limits) %>%
+    # group_by(!!!(groups(averages)))
 
 
 }

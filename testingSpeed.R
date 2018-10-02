@@ -22,6 +22,7 @@ system.time(
                             grouping = .(participant, size),
                             prob = .6, bootstrap = "none")
   )
+fit
 
 
 ### single data

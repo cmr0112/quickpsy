@@ -297,7 +297,7 @@ quickpsy <- function(d, x = x, k = k, n = n,
            call. = FALSE)
     }
 
-  ## removing dummy group
+  # removing dummy group
   qp <- qp %>%
     map(
       function(.x) {

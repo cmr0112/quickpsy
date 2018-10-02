@@ -1,5 +1,5 @@
 #' @export
-plot.quickpsy <- function(x,...)
+plot.quickpsy <- function(x, ...)
 {
-  plotcurves(x,...)
+  plotcurves(x, ...)
 }
