@@ -27,7 +27,7 @@ pini <- list(c(.2, .3), c(.1, .6))
 pini <- tibble(parn = c("p1", "p2"), par = c(1, 1))
 pini <- tibble(parn = c("p1", "p2"), parmin = c(.2, .1), parmax = c(.3, .6))
 
-fit1 <- quickpsy(dat1, xx, k, n, B = 2)
+fit1 <- quickpsy(dat1, xx, k, n, bootstrap = "none")
 
 fit1$nll_fun$nll_fun[[1]](c(1, 1))
 
@@ -78,6 +78,45 @@ ggplot(dat) +
                                            xend = thre,
                                            yend = prob,
                                           color = size))
+
+### fit same slope one participant
+cum_normal_fun <- function(x, p) suppressWarnings(pnorm(x, p[1], p[2]))
+cum_normal_fun2 <- function(x, p) suppressWarnings(pnorm(x, p[3], p[2]))
+
+fun_df <- tibble(size = c("large", "small"),
+                 fun = c(cum_normal_fun, cum_normal_fun2))
+
+# pini <- crossing(participant = 1:3,
+#                    parn = c("p1", "p2", "p3")) %>%
+#   mutate(par = 2) %>%
+#   group_by(participant)
+
+pini <- crossing(participant = 1:3,
+                 parn = c("p1", "p2", "p3")) %>%
+  mutate(parmin = 0, parmax = 2) %>%
+  group_by(participant)
+
+
+#pini <- c(1, 1, 1)
+pini <- list(c(0, 2), c(0, 2), c(0, 2))
+
+fit1 <- quickpsy(dat %>% filter(participant == 1), xx, k, n,
+               grouping = .(size),
+                parini = pini %>% filter(participant == 1),
+                fun = fun_df,
+                bootstrap = "none")
+
+fit1$nll_fun$nll_fun[[1]](c(1,1,1))
+
+ggplot(dat %>% filter(participant == 1)) +
+  geom_point(aes(x = xx, y = prob, color = size)) +
+  geom_line(data = fit1$curves, aes(x = x, y = y, color = size)) +
+  geom_segment(data = fit1$thresholds, aes(x = thre, y = 0,
+                                          xend = thre,
+                                          yend = prob,
+                                          color = size))
+
+
 
 ### fit same pse
 cum_normal_fun <- function(x, p) suppressWarnings(pnorm(x, p[1], p[2]))

@@ -1,7 +1,6 @@
 #' Creates sequences of x's
 #' @export x_seq
 x_seq <- function(limits, x) {
-
   limits %>%
     nest() %>%
     mutate(temp = map(data,

@@ -18,6 +18,15 @@ quickpsy_without_bootstrap <- function(d, x, k, n,
   limits <- limits(averages, x, xmin, xmax)
 
   psych_fun <- psych_fun(fun, guess, lapses)
+  if (group_vars(psych_fun) == group_vars(averages)) {
+    averages <- averages %>%
+      mutate(dummy_group = "g") %>%
+      group_by(dummy_group, add = TRUE)
+
+    limits <- limits %>%
+      mutate(dummy_group = "g") %>%
+      group_by(dummy_group, add = TRUE)
+  }
 
   nll_fun <- nll_fun(averages, psych_fun, x, create_nll)
 
@@ -34,7 +43,7 @@ quickpsy_without_bootstrap <- function(d, x, k, n,
   }
 
   param <- param(nll_fun, parini)
-  print(param)
+
   ypred <- ypred(averages, param, psych_fun, x, log)
 
   x_seq <- x_seq(limits, x)
@@ -50,6 +59,7 @@ quickpsy_without_bootstrap <- function(d, x, k, n,
   aic <- akaike(logliks, param)
 
   deviance <- devi(logliks, loglikssaturated)
+
 
   qp <- list(averages = averages,
              limits = limits,
@@ -67,8 +77,7 @@ quickpsy_without_bootstrap <- function(d, x, k, n,
              aic = aic,
              deviance = deviance)
 
-
-  if (length(groups(averages)) != 1) {
+  if (length(group_vars(averages) %>% setdiff("dummy_group")) != 1) {
     param_dif <- param_dif(param)
     qp <- c(qp, list(par_dif = param_dif))
   }
@@ -77,7 +86,7 @@ quickpsy_without_bootstrap <- function(d, x, k, n,
     thresholds <- thresholds(param, curves, psych_fun, prob, log, guess, lapses)
     qp <- c(qp, list(thresholds = thresholds))
 
-    if (length(groups(averages)) != 1) {
+    if (length(group_vars(averages) %>% setdiff("dummy_group")) != 1) {
       thresholds_dif <- thresholds_dif(thresholds)
       qp <- c(qp, list(thresholds_dif = thresholds_dif))
     }
