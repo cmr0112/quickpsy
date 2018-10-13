@@ -18,7 +18,8 @@ quickpsy_without_bootstrap <- function(d, x, k, n,
   limits <- limits(averages, x, xmin, xmax)
 
   psych_fun <- psych_fun(fun, guess, lapses)
-  if (group_vars(psych_fun) == group_vars(averages)) {
+
+  if (length(group_vars(psych_fun)) == length(group_vars(averages))) {
     averages <- averages %>%
       mutate(dummy_group = "g") %>%
       group_by(dummy_group, add = TRUE)
