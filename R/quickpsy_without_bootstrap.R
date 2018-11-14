@@ -40,6 +40,7 @@ quickpsy_without_bootstrap <- function(d, x, k, n,
     stop("parini (initial parameters) must be specified.", call. = FALSE)
   }
   else {
+
     parini <- parini(averages, parini, psych_fun)
   }
 
