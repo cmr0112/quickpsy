@@ -20,7 +20,7 @@ avbootstrap <- function(averages, ypred, bootstrap, B) {
       crossing(averages_for_boot) %>%
       group_by(sample) %>%
       mutate(k = rbinom(n(), size = n, prob = prob)) %>%
-      select(-prob)
+      dplyr::select(-prob)
   }
 
   apply_to_two_elements(averages, ypred, one_avbootstrap, bootstrap, B)

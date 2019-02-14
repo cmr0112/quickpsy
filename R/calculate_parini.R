@@ -100,7 +100,7 @@ calculate_parini <- function(averages, funname, x, guess, lapses) {
       nest(everything(), .key = averages) %>%
       mutate(temp = map(averages, one_calculate_parini,
                         funname, x, guess, lapses)) %>%
-      select(-averages) %>%
+      dplyr::select(-averages) %>%
       unnest(temp) %>%
       group_by(!!!(groups(averages)))
 }

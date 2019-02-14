@@ -6,7 +6,7 @@
 create_nll_saturated <- function(averages, psych_fun, x) {
   function(p) {
     calculate_nll <- function(averages, psych_fun) {
-      x <- averages %>% select(!!x) %>% pull()
+      x <- averages %>% dplyr::select(!!x) %>% pull()
       eps <- .Machine$double.eps
 
       phi <- averages$k / averages$n

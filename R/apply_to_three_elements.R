@@ -68,7 +68,7 @@ apply_to_three_elements <- function(x, y, z, q, ...) {
 
   df %>%
     mutate(temp = pmap(list(!!enq_x, !!enq_y, !!enq_z), q, !!!extra_vars)) %>%
-    select(-!!enq_x, -!!enq_y,-!!enq_z) %>%
+    dplyr::select(-!!enq_x, -!!enq_y,-!!enq_z) %>%
     unnest(temp) %>%
     group_by(UQS(groups(x)))
 }

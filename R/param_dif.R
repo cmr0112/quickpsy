@@ -1,8 +1,8 @@
 #' @keywords internal
 #' @export param_dif
 param_dif <- function(param) {
-
-  combinations <- as_tibble(t(combn(nrow(param %>% filter(parn == "p1")), 2)))
+  
+  combinations <- as.data.frame(t(combn(nrow(param %>% filter(parn == "p1")), 2)))
 
   create_df <- function(df) {
     select_rows <- function(V1, V2) {
@@ -17,7 +17,7 @@ param_dif <- function(param) {
       mutate(temp = list(select_rows(V1, V2))) %>%
       unnest(temp) %>%
       mutate(dif = par - par2) %>%
-      select(-V1, -V2)
+      dplyr::select(-V1, -V2)
   }
 
   param %>%

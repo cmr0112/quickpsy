@@ -6,7 +6,7 @@ x_seq <- function(limits, x) {
     mutate(temp = map(data,
                       ~tibble(!!quo_name(x) := seq(.$xmin, .$xmax,
                                                    length = 300)))) %>%
-    select(-data) %>%
+    dplyr::select(-data) %>%
     unnest(temp) %>%
     group_by(UQS(groups(limits)))
 

@@ -12,7 +12,7 @@ psych_fun <- function(fun, guess, lapses) {
 
   }
   else {
-    groups <- fun %>% select(-fun) %>% names() %>% syms()
+    groups <- fun %>% dplyr::select(-fun) %>% names() %>% syms()
     #fun %>% group_by_at(vars(groups))
     fun %>% group_by(!!!groups)
   }

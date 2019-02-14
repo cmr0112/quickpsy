@@ -37,7 +37,7 @@ ypred <- function(averages, param, psych_fun, x, log) {
 
   df %>%
     mutate(temp = pmap(list(averages, param, psych_fun), one_ypred, x, log)) %>%
-    select(-averages, -param, -psych_fun) %>%
+    dplyr::select(-averages, -param, -psych_fun) %>%
     unnest(temp) %>%
     group_by(UQS(groups(averages)))
 

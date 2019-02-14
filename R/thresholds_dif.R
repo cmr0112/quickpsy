@@ -3,9 +3,9 @@
 thresholds_dif <- function(thresholds) {
 
   thre <- thresholds %>%
-    select(-prob)
+    dplyr::select(-prob)
 
-  combinations <- as_tibble(t(combn(nrow(thre), 2)))
+  combinations <- as.data.frame(t(combn(nrow(thre), 2)))
 
   select_rows <- function(V1, V2) {
     cond1 <- thre[V1,]
@@ -19,6 +19,6 @@ thresholds_dif <- function(thresholds) {
     mutate(temp = list(select_rows(V1, V2))) %>%
     unnest(temp) %>%
     mutate(dif = thre - thre2) %>%
-    select(-V1, -V2)
+    dplyr::select(-V1, -V2)
 
 }

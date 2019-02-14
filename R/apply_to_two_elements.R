@@ -18,7 +18,7 @@ apply_to_two_elements <- function(x, y, q, ...) {
 
   df %>%
   mutate(temp = map2(!!enq_x, !!enq_y, q, !!!extra_vars)) %>%
-  select(-!!enq_x, -!!enq_y) %>%
+  dplyr::select(-!!enq_x, -!!enq_y) %>%
   unnest(temp) %>%
   group_by(UQS(groups(x)))
 }

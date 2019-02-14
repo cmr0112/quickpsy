@@ -14,6 +14,9 @@ quickpsy_without_bootstrap <- function(d, x, k, n,
 
   ### Calling functions
   averages <- averages(d, x, k, n, groups, log)
+  
+
+  
 
   limits <- limits(averages, x, xmin, xmax)
 
@@ -28,10 +31,11 @@ quickpsy_without_bootstrap <- function(d, x, k, n,
       mutate(dummy_group = "g") %>%
       group_by(dummy_group, add = TRUE)
   }
-
+  
   nll_fun <- nll_fun(averages, psych_fun, x, create_nll)
 
   nll_fun_saturated <- nll_fun(averages, psych_fun, x, create_nll_saturated)
+  
 
   if (is.null(parini) & (funname %in% names(get_functions()))) {
     parini <- calculate_parini(averages, funname, x, guess, lapses)
@@ -47,21 +51,26 @@ quickpsy_without_bootstrap <- function(d, x, k, n,
   param <- param(nll_fun, parini)
 
   ypred <- ypred(averages, param, psych_fun, x, log)
+  
+
 
   x_seq <- x_seq(limits, x)
+  
+
 
   curves <- ypred(x_seq, param, psych_fun, x, log)
 
   sse <-  sse(averages, ypred)
 
   logliks <- logliks(nll_fun, param)
+  
+
 
   loglikssaturated <- logliks_saturated(nll_fun_saturated, averages)
 
   aic <- akaike(logliks, param)
 
   deviance <- devi(logliks, loglikssaturated)
-
 
   qp <- list(averages = averages,
              limits = limits,
@@ -79,7 +88,9 @@ quickpsy_without_bootstrap <- function(d, x, k, n,
              aic = aic,
              deviance = deviance)
 
+             
   if (length(group_vars(averages) %>% setdiff("dummy_group")) != 1) {
+    
     param_dif <- param_dif(param)
     qp <- c(qp, list(par_dif = param_dif))
   }

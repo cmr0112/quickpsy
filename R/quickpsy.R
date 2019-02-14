@@ -173,7 +173,6 @@ quickpsy <- function(d, x = x, k = k, n = n,
   if (is.logical(guess) && !guess) guess <- 0
   if (is.logical(lapses) && !lapses) lapses <- 0
 
-
   qp <- quickpsy_without_bootstrap(d, x, k, n,
                              groups,
                              xmin, xmax,
@@ -183,7 +182,6 @@ quickpsy <- function(d, x = x, k = k, n = n,
                              parini,
                              guess, lapses,
                              prob, thresholds)
-
 
     if (bootstrap == "parametric" || bootstrap == "nonparametric") {
       avbootstrap <-  avbootstrap(qp$averages,
@@ -302,7 +300,7 @@ quickpsy <- function(d, x = x, k = k, n = n,
     map(
       function(.x) {
         if("dummy_group" %in% names(.x)) {
-          .x %>% ungroup() %>% select(-dummy_group)
+          .x %>% ungroup() %>% dplyr::select(-dummy_group)
         }
         else {
           (.x)

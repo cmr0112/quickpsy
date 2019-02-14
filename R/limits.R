@@ -15,7 +15,7 @@ limits <- function(averages, x, xmin, xmax) {
   averages %>%
     nest(everything(), .key = averages) %>%
     mutate(limits = map(averages, one_limit, x, xmin, xmax)) %>%
-    select(-averages) %>%
+    dplyr::select(-averages) %>%
     unnest(limits) %>%
     group_by(!!!(groups(averages)))
 

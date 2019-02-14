@@ -24,7 +24,7 @@ model_selection_lrt <- function(qp_loglik1, qp_loglik2, alpha = .05){
            p.value =  pchisq(deviance, abs(n_par1 - n_par2),
                              lower.tail = FALSE),
            best = if_else( (p.value < alpha), target, null)) %>%
-    select(-target, -null, -loglik_target, -loglik_null)
+    dplyr::select(-target, -null, -loglik_target, -loglik_null)
 
 }
 

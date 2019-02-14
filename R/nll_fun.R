@@ -18,6 +18,6 @@ nll_fun <- function(averages, psych_fun, x, nll_creation) {
     mutate(psych_fun = list(psych_fun)) %>%
     mutate(nll_fun = map2(averages, psych_fun, nll_creation, x)) %>%
     group_by_at(vars(groups)) %>%
-    select(-averages, -psych_fun)
+    dplyr::select(-averages, -psych_fun)
 
 }
